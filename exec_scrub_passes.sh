@@ -1,3 +1,4 @@
+#!/bin/sh
 #############################################################################
 #
 # Andrew G. West - exec_scrub_passes.sh -- A simple script that dequeues

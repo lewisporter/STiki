@@ -1,3 +1,4 @@
+#!/bin/sh
 #############################################################################
 #
 # Andrew G. West - exec_frontend.sh -- This extremely simple script launches

@@ -17,6 +17,7 @@
   # is stored in the [deploy_source/] directory
 /irc_work/irc_output.java
 
+
   # Credentials encoded into shell scripts
 /api/stiki_api.php
 /backup/backup.sh
@@ -26,6 +27,10 @@
 
   # We don't need to include the Java build
 *.class
+/out/*
+
+  #nor should we include the prebuilt zip
+/deploy_gui/*.zip
 
   # Settings files specific to local machine
 .classpath
@@ -36,6 +41,7 @@
 *.swp
 local.properties
 .settings/
-
+.idea/*
+*.iml
 
 ##### END ###################################################################

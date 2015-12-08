@@ -1,3 +1,4 @@
+#!/bin/sh
 #############################################################################
 #
 # Andrew G. West - exec_backend.sh -- This simple script launches the STiki 
