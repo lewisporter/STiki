@@ -7,20 +7,20 @@ import core_objects.feature_set;
 /**
  * Andrew G. West - learn_interface.java - A simple interface which wraps
  * a learning "module", for example "SVM", or "ADTree".
- * 
+ *
  * Intuitively this object wraps both training and classification components.
  */
 public interface learn_interface{
-	
-	
+
+
 	// **************************** PUBLIC METHODS ***************************
-	
+
 	/**
 	 * Retrain the model (if applicable).
 	 * @param training_set List of features over which to train.
 	 */
 	public void train(List<feature_set> training_set) throws Exception;
-	
+
 	/**
 	 * Classify a feature set, returning a real valued score speaking to
 	 * the probability that the associated set is vandalism.
@@ -31,7 +31,7 @@ public interface learn_interface{
 	 * need be relatively (not absolutely) interpretable.
 	 */
 	public double classify(feature_set features) throws Exception;
-	
+
 	/**
 	 * How often the learning model should be re-trained (in edits)
 	 * @return An integer; "the model should be retrained every [x] edits". 
