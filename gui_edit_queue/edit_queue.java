@@ -105,7 +105,7 @@ public class edit_queue {
 	 *                         provides accessibility to some shared DB-handlers.
 	 * @param threads          Available threads for work
 	 * @param client_interface Client connection to the database
-	 * @parma default_queue Queue to be loaded at program start
+	 * @param default_queue Queue to be loaded at program start
 	 */
 	public edit_queue(stiki_frontend_driver parent, ExecutorService threads,
 	                  client_interface client_interface, SCORE_SYS default_queue)
