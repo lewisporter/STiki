@@ -3,12 +3,10 @@ package gui_menus;
 import gui_support.gui_filesys_images;
 import gui_support.gui_globals;
 import gui_support.url_browse;
-import javafx.scene.control.Hyperlink;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 import java.net.URL;
 
@@ -90,7 +88,7 @@ public class gui_help_doc {
 		// Add a hyperlink-listener to the HTML, modifying the default
 		// slightly so that anchor links are properly handled
 		content.addHyperlinkListener( (HyperlinkEvent e) -> {
-				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+				if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
 					JEditorPane src = (JEditorPane) e.getSource();
 					if (e.getDescription().startsWith("#")) {
 						src.scrollToReference(e.getDescription().substring(1));

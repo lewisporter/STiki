@@ -8,6 +8,7 @@ import java.awt.datatransfer.StringSelection;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -179,11 +180,21 @@ public class stiki_utils {
 	 * @return Integer code associated with that queue
 	 */
 	public static int queue_to_constant(SCORE_SYS queue) {
-		if (queue.equals(SCORE_SYS.STIKI)) return (1);
-		else if (queue.equals(SCORE_SYS.CBNG)) return (2);
-		else if (queue.equals(SCORE_SYS.WT)) return (3);
-		else if (queue.equals(SCORE_SYS.SPAM)) return (4);
-		return (0); // Catch-all if something weird happens
+		switch (queue) {
+			case STIKI:
+				return 1;
+			case CBNG:
+				return 2;
+			case WT:
+				return 3;
+			case SPAM:
+				return 4;
+			default:
+				/*This shouldn't happen. Changed to return -1 instead of 0 because
+				* returning 0 is usually a good thing*/
+				return 0;
+		}
+
 	}
 
 	/**
@@ -195,11 +206,18 @@ public class stiki_utils {
 	 * if the 'qcode' does not map to a system.
 	 */
 	public static SCORE_SYS constant_to_queue(int qcode) {
-		if (qcode == 1) return (SCORE_SYS.STIKI);
-		else if (qcode == 2) return (SCORE_SYS.CBNG);
-		else if (qcode == 3) return (SCORE_SYS.WT);
-		else if (qcode == 4) return (SCORE_SYS.SPAM);
-		return (null);
+		switch (qcode) {
+			case 1:
+				return SCORE_SYS.STIKI;
+			case 2:
+				return SCORE_SYS.CBNG;
+			case 3:
+				return SCORE_SYS.WT;
+			case 4:
+				return SCORE_SYS.SPAM;
+			default:
+				return null;
+		}
 	}
 
 	/**
@@ -210,27 +228,16 @@ public class stiki_utils {
 	 * the scoring system prioritize to find (vandalism, spam, etc.)
 	 */
 	public static QUEUE_TYPE queue_to_type(SCORE_SYS queue) {
-		if (queue.equals(SCORE_SYS.STIKI)) return (QUEUE_TYPE.VANDALISM);
-		else if (queue.equals(SCORE_SYS.CBNG)) return (QUEUE_TYPE.VANDALISM);
-		else if (queue.equals(SCORE_SYS.WT)) return (QUEUE_TYPE.VANDALISM);
-		else if (queue.equals(SCORE_SYS.SPAM)) return (QUEUE_TYPE.LINK_SPAM);
-		return (null);
-	}
-
-	/**
-	 * Test if the DB is reachable by trying to establish a connection. More
-	 * generally, this can be thought of as a network connectivity test.
-	 *
-	 * @return TRUE if the DB could be reached; FALSE, otherwise
-	 */
-	public static boolean test_db_connectivity() {
-		try {
-			stiki_con_client con_client = new stiki_con_client();
-			con_client.con.close();
-			return true;
-		} catch (Exception e) {
-			return false;
-		} // TRUE if connection established. Exceptions return FALSE.
+		switch (queue) {
+			case STIKI:
+			case CBNG:
+			case WT:
+				return QUEUE_TYPE.VANDALISM;
+			case SPAM:
+				return QUEUE_TYPE.LINK_SPAM;
+			default:
+				return null;
+		}
 	}
 
 	/**
@@ -372,7 +379,7 @@ public class stiki_utils {
 	/**
 	 * Given a String representation of a boolean; convert it to a native one
 	 *
-	 * @param value String representation of a boolean. Any casing of "true"
+	 * @param val String representation of a boolean. Any casing of "true"
 	 *              or "false" is accepted, as are "0" and "1"
 	 * @return native boolean representation of 'val'
 	 */
@@ -410,7 +417,7 @@ public class stiki_utils {
 	 */
 	public static List<String> all_pattern_matches_within(String regex,
 	                                                      String corpus) {
-		List<String> matches = new ArrayList<String>();
+		List<String> matches = new ArrayList<>();
 		Matcher match = Pattern.compile(regex,
 				Pattern.CASE_INSENSITIVE).matcher(corpus);
 		while (match.find())
@@ -428,7 +435,7 @@ public class stiki_utils {
 	 */
 	public static Set<String> unique_matches_within(String regex,
 	                                                String corpus) {
-		Set<String> matches = new HashSet<String>();
+		Set<String> matches = new HashSet<>();
 		Matcher match = Pattern.compile(regex,
 				Pattern.CASE_INSENSITIVE).matcher(corpus);
 		while (match.find())
@@ -488,7 +495,7 @@ public class stiki_utils {
 	/**
 	 * Number of substrings that match some pattern, in a larger string.
 	 *
-	 * @param regex  Pattern by which matches should be determined
+	 * @param pattern  Pattern by which matches should be determined
 	 * @param corpus Larger string in which to search for matches
 	 * @return Number of substrings of 'corpus' matching 'regex'
 	 */
@@ -641,19 +648,13 @@ public class stiki_utils {
 	 * @return Integer equivalent of `month', or zero (0) if error.
 	 */
 	public static int month_name_to_int(String month) {
-		if (month.equals("January")) return 1;
-		else if (month.equals("February")) return 2;
-		else if (month.equals("March")) return 3;
-		else if (month.equals("April")) return 4;
-		else if (month.equals("May")) return 5;
-		else if (month.equals("June")) return 6;
-		else if (month.equals("July")) return 7;
-		else if (month.equals("August")) return 8;
-		else if (month.equals("September")) return 9;
-		else if (month.equals("October")) return 10;
-		else if (month.equals("November")) return 11;
-		else if (month.equals("December")) return 12;
-		else return (0);
+		try {
+			LocalDate calcMonth = LocalDate.parse(month);
+			return calcMonth.getMonthValue();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return 0;
 	}
 
 	/**

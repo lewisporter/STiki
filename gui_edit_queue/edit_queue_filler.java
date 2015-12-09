@@ -171,6 +171,7 @@ public class edit_queue_filler implements Runnable {
 			} // Populate the queue until interrupted by shutdown
 
 		} catch (Exception e) {
+			System.err.println("Queue interruption: " + e.getMessage());
 		}    // Only will occur at interruption
 	}
 
@@ -209,8 +210,6 @@ public class edit_queue_filler implements Runnable {
 		this.server_q.clear(); // Don't forget there are TWO queues
 		cancel_all(futures);
 		rid_queue_cache.clear();
-		while (rid_queue_cache.poll() == null) {
-		}
 		rid_queue_cache.poll(); // Throw away one once available
 	}
 
@@ -230,12 +229,14 @@ public class edit_queue_filler implements Runnable {
 	 * Wipe recently held reservations.
 	 */
 	private void wipe_recent_res() {
-		try { // Just iterate over all recently held IDs
-			for (int i = 0; i < resid_history.size(); i++)
-				parent.client_interface.queues.queue_wipe(resid_history.get(i));
-		} catch (Exception e) {
+		resid_history.forEach(resID -> {
+			try {
+			parent.client_interface.queues.queue_wipe(resID);
+			} catch (Exception e) {
+				System.err.println("Caught Exception: " + e.getMessage());
+			}
+		});
 		}
-	}
 
 	/**
 	 * Add an res-ID to the "historical structure". This action will maintain
@@ -261,13 +262,12 @@ public class edit_queue_filler implements Runnable {
 	private synchronized static List<pair<Future<?>, Long>> remove_done(
 			List<pair<Future<?>, Long>> futures_in) {
 
-		List<pair<Future<?>, Long>> futures_live =
-				new LinkedList<pair<Future<?>, Long>>();
-		for (int i = 0; i < futures_in.size(); i++) {
-			if (!futures_in.get(i).fst.isDone())
-				futures_live.add(futures_in.get(i));
-			// else System.out.println(futures_in.get(i).snd + " not done");
-		} // Iterate over all tasks, checking "done" status
+		List<pair<Future<?>, Long>> futures_live = new LinkedList<>();
+		futures_in.forEach(futureLongpair -> {
+			if (!futureLongpair.fst.isDone()) {
+				futures_live.add(futureLongpair);
+			}
+		});
 		return (futures_live);
 	}
 
@@ -279,8 +279,8 @@ public class edit_queue_filler implements Runnable {
 	 */
 	private synchronized static void cancel_all(
 			List<pair<Future<?>, Long>> futures) {
-		for (int i = 0; i < futures.size(); i++)
-			futures.get(i).fst.cancel(true); // Cancel via interrupt if needed
+		//Cancel via interrupt if needed
+		futures.forEach(futureLongpair -> {futureLongpair.fst.cancel(true);});
 	}
 
 }

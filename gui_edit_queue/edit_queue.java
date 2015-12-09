@@ -113,11 +113,10 @@ public class edit_queue {
 
 		// First the structures are init'ed. Note where concurrent
 		// security is ensured over [inactive_rids] struct.
-		this.back_helper = new pair<Boolean, gui_display_pkg>(false, null);
-		this.edits_shown = new TreeSet<Long>();
-		this.rid_queue_cache = new LinkedBlockingQueue<gui_display_pkg>();
-		this.inactive_rids = Collections.synchronizedSortedSet(
-				new TreeSet<Long>());
+		this.back_helper = new pair<>(false, null);
+		this.edits_shown = new TreeSet<>();
+		this.rid_queue_cache = new LinkedBlockingQueue<>();
+		this.inactive_rids = Collections.synchronizedSortedSet(new TreeSet<>());
 
 		// Then their population/maintenance classes and threads
 		this.queue_in_use = default_queue;
@@ -139,8 +138,6 @@ public class edit_queue {
 	 * @param using_native_rb Is the 'stiki_user' using the native rollback
 	 *                        functionality to undo edits? (precondition: they have the privilege)
 	 * @param session_cookie  Cookie object associated with 'stiki_user'
-	 * @param using_native_rb Is the 'stiki_user' using the native rollback
-	 *                        functionality to undo edits? (precondition: they have the privilege)
 	 * @param queue           Queue from which next edit should be fetched
 	 * @param prev            If TRUE, instruct the queue to re-show the previous
 	 *                        edit, rather than advancing onward (the FALSE case).
@@ -151,8 +148,8 @@ public class edit_queue {
 	                     boolean using_native_rb, SCORE_SYS queue, boolean prev,
 	                     boolean reattempt) {
 
-		if (stiki_user != this.stiki_user ||
-				using_native_rb != this.using_native_rb ||
+		if (!stiki_user.equals(this.stiki_user) ||
+				(using_native_rb != this.using_native_rb) ||
 				queue != this.queue_in_use) {
 			this.stiki_user = stiki_user;
 			this.using_native_rb = using_native_rb;
@@ -187,7 +184,7 @@ public class edit_queue {
 				if (edits_shown.contains(cur_edit.metadata.rid) ||
 						!queue_maintainer.active(cur_edit.metadata.rid, true)) {
 					next_rid(stiki_user, session_cookie,
-							using_native_rb, queue, prev, true);
+							using_native_rb, queue, false, true);
 				} else edits_shown.add(cur_edit.metadata.rid);
 
 			} // If back button not involved, advance normally queue

@@ -189,9 +189,9 @@ public class gui_display_pkg {
 			Set<String> perms;
 			if (!md.user_is_ip) // IPs have no permissions
 				perms = api_retrieve.process_user_perm(md.user);
-			else perms = new HashSet<String>(0);
+			else perms = new HashSet<>(0);
 
-			Set<String> titles_missing = new HashSet<String>();
+			Set<String> titles_missing = new HashSet<>();
 			titles_missing.add("User_talk:" + md.user);
 			titles_missing.add("User:" + md.user);
 			titles_missing.add("Talk:" + md.title);
@@ -307,7 +307,7 @@ public class gui_display_pkg {
 			else perms = new HashSet<String>(0);
 
 			// Determine existence of user/talk pages
-			Set<String> titles_missing = new HashSet<String>();
+			Set<String> titles_missing = new HashSet<>();
 			titles_missing.add("User_talk:" + meta.user);
 			titles_missing.add("User:" + meta.user);
 			titles_missing.add("Talk:" + meta.title);
@@ -379,10 +379,10 @@ public class gui_display_pkg {
 		end_con += "(ORT), as required for your usage.";
 		end_con += "</DIV></BODY><HTML>";
 
-		List<metadata> meta_list = new ArrayList<metadata>(1);
+		List<metadata> meta_list = new ArrayList<>(1);
 		meta_list.add(new metadata()); // Just create a one element list
 		return (new gui_display_pkg(meta_list, null, null, end_con,
-				end_con, null, 0, new HashSet<String>(0),
+				end_con, null, 0, new HashSet<>(0),
 				false, false, false, null));
 	}
 

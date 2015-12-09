@@ -65,7 +65,7 @@ public class edit_queue_maintain implements Runnable {
 	 *                         of inspection (to be copied and inspected offline)
 	 * @param inactive_rids    Structure to which RIDs discovered to be
 	 *                         inactive will be written.
-	 * @param client_interface Access to client stored procedures
+	 * @param client_iface Access to client stored procedures
 	 */
 	public edit_queue_maintain(LinkedBlockingQueue<gui_display_pkg>
 			                           rid_queue_cache, SortedSet<Long> inactive_rids,
@@ -100,7 +100,7 @@ public class edit_queue_maintain implements Runnable {
 					(ts_last_check + SECS_REFRESH_CURRENCY)) {
 
 				try {
-					queued_pairs = new HashMap<Long, Long>(); // clean
+					queued_pairs = new HashMap<>(); // clean
 					queue_iter = rid_queue_cache.iterator();
 					while (queue_iter.hasNext()) {
 						cur_pkg = queue_iter.next();
@@ -114,13 +114,12 @@ public class edit_queue_maintain implements Runnable {
 					ts_last_check = stiki_utils.cur_unix_time();
 
 					// Compare actual and enqeued sets
-					new_inactives = new ArrayList<Long>();
+					new_inactives = new ArrayList<>();
 					compare_iter = queued_pairs.keySet().iterator();
 					while (compare_iter.hasNext()) {
 						compare_pid = compare_iter.next();
-						pot_del_pid = queued_pairs.get(compare_pid).longValue();
-						if ((pot_del_pid != actual_pairs.get(compare_pid).
-								longValue()) &&
+						pot_del_pid = queued_pairs.get(compare_pid);
+						if ((pot_del_pid != actual_pairs.get(compare_pid)) &&
 								!inactive_rids.contains(pot_del_pid)) {
 							inactive_rids.add(pot_del_pid); // Insert
 							new_inactives.add(pot_del_pid);
@@ -129,10 +128,16 @@ public class edit_queue_maintain implements Runnable {
 
 					// Now delete inactives back on server. Note that this
 					// was not done in-loop for latency reasons.
-					for (int i = 0; i < new_inactives.size(); i++)
-						client_iface.queues.queue_delete(new_inactives.get(i));
+					new_inactives.forEach(newInactive -> {
+						try {
+							client_iface.queues.queue_delete(newInactive);
+						} catch (Exception e) {
+							System.err.println("Delete inactives error: " + e.getMessage());
+						}
+					});
 
 				} catch (Exception e) {
+					System.err.println("Delete inactives error: " + e.getMessage());
 				}
 				// If something goes wrong (likely the
 				// Wiki-API call). Just ignore, and

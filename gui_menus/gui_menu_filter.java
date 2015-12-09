@@ -36,7 +36,7 @@ public class gui_menu_filter extends JMenu implements ActionListener {
 	 * Construct a [gui_menu_filter] -- creating the menu, its mnemonic,
 	 * its submenus, the items, and adding all necessary listeners.
 	 *
-	 * @param Parent class which contains this menu, so that the visual aspects
+	 * @param parent class which contains this menu, so that the visual aspects
 	 *               can be altered via menu selections.
 	 */
 	public gui_menu_filter(stiki_frontend_driver parent) {

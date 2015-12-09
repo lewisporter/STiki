@@ -64,7 +64,7 @@ public class gui_menu_options extends JMenu implements ActionListener {
 	 * Construct a [gui_menu_options] -- creating the button, its mnemonic,
 	 * its submenus, the sub-menu items, and adding all necessary listeners.
 	 *
-	 * @param Parent class which contains this menu, so that the visual aspects
+	 * @param parent class which contains this menu, so that the visual aspects
 	 *               can be altered via menu selections.
 	 */
 	public gui_menu_options(stiki_frontend_driver parent) {

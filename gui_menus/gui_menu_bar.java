@@ -55,7 +55,7 @@ public class gui_menu_bar extends JMenuBar {
 	 * Construct a [gui_menu_bar], visually establishing all menus,
 	 * and the action-items that occur over them.
 	 *
-	 * @param main_win      The STiki frontend -- which has public access to all
+	 * @param frame      The STiki frontend -- which has public access to all
 	 *                      visual components, s.t. this menu can affect the display of main
 	 *                      window content without over-zealous component passing.
 	 * @param default_queue Queue selected by default at program start
@@ -100,20 +100,6 @@ public class gui_menu_bar extends JMenuBar {
 	}
 
 	// **************************** PUBLIC METHODS ***************************
-
-	/**
-	 * Create a top-level menu by providing a name and key-event.
-	 *
-	 * @param text     Text used to label the menu being produced.
-	 * @param keyevent Mnemonic KeyEvent character to associate with the menu
-	 * @return A JMenu, labeled as 'text' with mnemonic 'keyevent'
-	 */
-	public static JMenu create_top_menu(String text, int keyevent) {
-		JMenu new_menu = new JMenu(text);
-		new_menu.setFont(gui_globals.PLAIN_NORMAL_FONT);
-		new_menu.setMnemonic(keyevent);
-		return (new_menu);
-	}
 
 	/**
 	 * Create a menu-item by providing a name and key-event.

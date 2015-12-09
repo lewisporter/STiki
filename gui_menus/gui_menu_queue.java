@@ -218,13 +218,13 @@ public class gui_menu_queue extends JMenu implements ActionListener {
 	 * @param default_sys Queue which should be selected
 	 */
 	private void set_initial_state(SCORE_SYS default_sys) {
-		if (default_sys.equals(SCORE_SYS.STIKI))
+		if (default_sys == SCORE_SYS.STIKI)
 			item_stiki.setSelected(true);
-		else if (default_sys.equals(SCORE_SYS.CBNG))
+		else if (default_sys == SCORE_SYS.CBNG)
 			item_cluebotng.setSelected(true);
-		else if (default_sys.equals(SCORE_SYS.WT))
+		else if (default_sys == SCORE_SYS.WT)
 			item_stiki.setSelected(true);
-		else if (default_sys.equals(SCORE_SYS.SPAM))
+		else if (default_sys == SCORE_SYS.SPAM)
 			item_spam.setSelected(true);
 	}
 
@@ -260,13 +260,13 @@ public class gui_menu_queue extends JMenu implements ActionListener {
 
 		// Append one-hour statistics into message
 		sb_message.append(
-				"QUEUE - CLASSIFICATIONS (REVERT-%)\n\n" +
-						"In the last one hour:\n" +
-						"---------------------------------------\n" +
-						"ClueBot NG - " + cbng_use + " (" + df.format(cbng_per) + "%)\n" +
-						"Metadata - " + stiki_use + " (" + df.format(stiki_per) + "%)\n" +
-						"Wikitrust - " + wt_use + " (" + df.format(wt_per) + "%)\n" +
-						"Link Spam - " + spam_use + " (" + df.format(spam_per) + "%)\n\n");
+				"QUEUE - CLASSIFICATIONS (REVERT-%)\n\n")
+						.append("In the last one hour:\n")
+						.append("---------------------------------------\n")
+						.append("ClueBot NG - ").append(cbng_use).append(" (").append(df.format(cbng_per)).append("%)\n")
+						.append("Metadata - ").append(stiki_use).append(" (").append(df.format(stiki_per)).append("%)\n")
+						.append("Wikitrust - ").append(wt_use).append(" (").append(df.format(wt_per)).append("%)\n")
+						.append("Link Spam - ").append(spam_use).append(" (").append(df.format(spam_per)).append("%)\n\n");
 
 		// Get recent usage statistics via DB (six hours ago)
 		time_ago = stiki_utils.cur_unix_time() - 3600 * 6;
@@ -281,13 +281,12 @@ public class gui_menu_queue extends JMenu implements ActionListener {
 		spam_per = (spam_use > 0) ? 100.0 * recent_use[7] / spam_use : 0.0;
 
 		// Append six-hour statistics into message
-		sb_message.append(
-				"In the last six hours:\n" +
-						"---------------------------------------\n" +
-						"ClueBot NG - " + cbng_use + " (" + df.format(cbng_per) + "%)\n" +
-						"Metadata - " + stiki_use + " (" + df.format(stiki_per) + "%)\n" +
-						"Wikitrust - " + wt_use + " (" + df.format(wt_per) + "%)\n" +
-						"Link Spam - " + spam_use + " (" + df.format(spam_per) + "%)\n\n");
+		sb_message.append("In the last six hours:\n").append(
+						"---------------------------------------\n")
+						.append("ClueBot NG - ").append(cbng_use).append(" (").append(df.format(cbng_per)).append("%)\n")
+						.append("Metadata - ").append(stiki_use).append(" (").append(df.format(stiki_per)).append("%)\n")
+						.append("Wikitrust - ").append(wt_use).append(" (").append(df.format(wt_per)).append("%)\n")
+						.append("Link Spam - ").append(spam_use).append(" (").append(df.format(spam_per)).append("%)\n\n");
 
 		JOptionPane.showMessageDialog(parent, sb_message.toString(),
 				"Recent STiki/queue usage statistics",
@@ -361,12 +360,10 @@ public class gui_menu_queue extends JMenu implements ActionListener {
 			agf = Integer.parseInt(parts[i + 3]);
 			if (user.equalsIgnoreCase(user_in))
 				user_rank = rank;
-			sb_leaderboard.append("<TR>" +
-					"<TD>" + rank + "</TD>" +
-					"<TD>" + user + "</TD>" +
-					"<TD>" + quant + "</TD>" +
-					"<TD>" + df.format(100.0 * vand / quant) + "%</TD>" +
-					"<TD>" + df.format(100.0 * agf / quant) + "%</TD></TR>\n");
+			sb_leaderboard.append("<TR>").append("<TD>").append(rank).append("</TD>").append("<TD>").append(user)
+					.append("</TD>").append("<TD>").append(quant).append("</TD>").append("<TD>").
+					append(df.format(100.0 * vand / quant)).append("%</TD>").append("<TD>").
+					append(df.format(100.0 * agf / quant)).append("%</TD></TR>\n");
 		} // Convert CSV into HTML table format
 		sb_leaderboard.append("</TABLE></DIV>\n");
 

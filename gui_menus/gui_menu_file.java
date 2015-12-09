@@ -40,7 +40,7 @@ public class gui_menu_file extends JMenu implements ActionListener {
 	 * Construct a [gui_menu_file] -- creating the menu button,
 	 * its menu items, and registering all necessary listeners.
 	 *
-	 * @param Parent class which contains this menu
+	 * @param parent class which contains this menu
 	 */
 	public gui_menu_file(stiki_frontend_driver parent) {
 

@@ -118,9 +118,11 @@ public class edit_queue_fetcher implements Runnable {
 				shared_queue.offer(cur_edit);
 
 		} catch (Exception e) {
-		} // Things could go wrong. But given that
-		// thread-pool will ignore and start another,
-		// we just call this RID dead and ignore
+			/*We pronounce this RID dead and move on.
+			* The thread pool will just start another.
+			* */
+			System.err.println("Dead RID: " + e.getMessage());
+		}
 	}
 
 }
