@@ -1,13 +1,14 @@
 package gui_support;
 
+import core_objects.stiki_utils;
 import gui_menus.gui_text_menu;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Insets;
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.text.html.HTMLDocument;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.font.TextAttribute;
 import java.io.IOException;
@@ -17,33 +18,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComponent;
-import javax.swing.JEditorPane;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JSeparator;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.TitledBorder;
-import javax.swing.text.html.HTMLDocument;
-
-import core_objects.stiki_utils;
-
 /**
  * Andrew G. West - gui_globals.java - This class implements the static
  * method and constants used in the programming of the STiki GUI.
  */
 @SuppressWarnings("serial")
-public class gui_globals{
+public class gui_globals {
 
 	// **************************** PUBLIC FIELDS ****************************
 
@@ -84,7 +64,7 @@ public class gui_globals{
 	 * Horizontal spacing, in pixels, between elements on the JMenuBar,
 	 * or perhaps between elements and the vertical separators beween them.
 	 */
-	public static final int MENUBAR_HORIZ_SPACING= 10;
+	public static final int MENUBAR_HORIZ_SPACING = 10;
 
 	/**
 	 * Font to use when a "title-sized, bold" font is desired.
@@ -141,12 +121,12 @@ public class gui_globals{
 	// ************ REGEX *************
 
 	/**
-	 * String representation (unicode) of a Zero-Width-Space (ZWS). 
+	 * String representation (unicode) of a Zero-Width-Space (ZWS).
 	 */
 	public static final String ZWS = "\u200B";
 
 	/**
-	 * Character representation (unicode) of a Zero-Width-Space (ZWS). 
+	 * Character representation (unicode) of a Zero-Width-Space (ZWS).
 	 */
 	public static final char ZWS_CHAR = '\u200B';
 
@@ -193,71 +173,85 @@ public class gui_globals{
 	/**
 	 * Create a JEditorPane designed for the display of an HTML page, and
 	 * set its style such that is consistent with other STiki GUI elements
-	 * @param URL URL to intialize the pane with. No content will be 
-	 * displayed if the NULL value is passed.
-	 * @param copyable If TRUE then one will be able to highlight and 
-	 * copy-(paste) text out of this pane. Else, such functionality 
-	 * will be disabled.
+	 *
+	 * @param URL      URL to intialize the pane with. No content will be
+	 *                 displayed if the NULL value is passed.
+	 * @param copyable If TRUE then one will be able to highlight and
+	 *                 copy-(paste) text out of this pane. Else, such functionality
+	 *                 will be disabled.
 	 * @return A new STiki-style, JEditorPane, which expects HTML content.
 	 * Null will be returned if a URL is passed at construction and
 	 * retrieval of that URL results in an IOException.
 	 * @throws IOException
 	 */
 	public static JEditorPane create_stiki_html_pane(URL url,
-	                                                 final boolean copyable){
+	                                                 final boolean copyable) {
 
 		// Create the pane and set basic properties
 		// Copy-ability is an option; but must accomodate ZWS chars.
 		JEditorPane pane;
-		if(url != null){
-			try{pane = new JEditorPane(url){
-				public void copy(){
-					if(copyable)
-						stiki_utils.set_sys_clipboard(diff_whitespace.
-								strip_zws_chars(this.getSelectedText()));
-				} // Overwrite copy functionality to accomodate ZWS
-				public void cut(){}};
-			} catch(Exception e){
+		if (url != null) {
+			try {
+				pane = new JEditorPane(url) {
+					@Override
+					public void copy() {
+						if (copyable)
+							stiki_utils.set_sys_clipboard(diff_whitespace.
+									strip_zws_chars(this.getSelectedText()));
+					} // Overwrite copy functionality to accomodate ZWS
+
+					@Override
+					public void cut() {
+					}
+				};
+			} catch (Exception e) {
 				System.err.println("Failed to open URL: " +
 						url.toString() + " when initializing an HTML panel");
 				e.printStackTrace();
-				return(null);
+				return (null);
 			} // Report any URL failure
-		} else{	pane = new JEditorPane(){
-			public void copy(){
-				if(copyable)
-					stiki_utils.set_sys_clipboard(diff_whitespace.
-							strip_zws_chars(this.getSelectedText()));
-			} // Overwrite copy functionality to accomodate ZWS
-			public void cut(){}};
+		} else {
+			pane = new JEditorPane() {
+				@Override
+				public void copy() {
+					if (copyable)
+						stiki_utils.set_sys_clipboard(diff_whitespace.
+								strip_zws_chars(this.getSelectedText()));
+				} // Overwrite copy functionality to accomodate ZWS
+
+				@Override
+				public void cut() {
+				}
+			};
 		} // Allow for content initialization at construction
 
 		// Some basic properties
 		pane.setContentType("text/html");
 		pane.setVisible(true);
 		pane.setEditable(false);
-		if(!copyable)
+		if (!copyable)
 			pane.setHighlighter(null);
 		else pane.addMouseListener(new gui_text_menu(pane)); // right-click
 
 		// Use basic style-sheet rules to ensure HTML style
 		// is consistent with that used by other GUI elements
 		String css_rule = "body { " +
-				"font-family: " +  DEFAULT_BROWSER_FONT.getFamily() + "; " +
+				"font-family: " + DEFAULT_BROWSER_FONT.getFamily() + "; " +
 				"font-size: " + DEFAULT_BROWSER_FONT.getSize() + "pt; }";
 		HTMLDocument html_doc = (HTMLDocument) pane.getDocument();
 		html_doc.getStyleSheet().addRule(css_rule);
-		return(pane);
+		return (pane);
 	}
 
 	/**
 	 * Change the default font used in an HTML pane (JEditorPane).
+	 *
 	 * @param pane The JEditorPane object whose default font should be changed
 	 * @param font The new default font which should be installed
 	 */
-	public static void change_html_pane_font(JEditorPane pane, Font font){
+	public static void change_html_pane_font(JEditorPane pane, Font font) {
 		String css_rule = "body { " +
-				"font-family: " +  font.getFamily() + "; " +
+				"font-family: " + font.getFamily() + "; " +
 				"font-size: " + font.getSize() + "pt; }";
 		HTMLDocument html_doc = (HTMLDocument) pane.getDocument();
 		html_doc.getStyleSheet().addRule(css_rule); // Just override previous?
@@ -266,17 +260,19 @@ public class gui_globals{
 
 	/**
 	 * Open the users web-browser and display a URL.
+	 *
 	 * @param parent If needed, component from which error dialog should fire
-	 * @param url URL to be displayed in the web browser.
+	 * @param url    URL to be displayed in the web browser.
 	 */
-	public static void open_url(Component parent, String url){
+	public static void open_url(Component parent, String url) {
 
 		// Oversimplified hack for Wiki-URLs. Truly, an UTF-8 encoding
 		// needs applied over ONLY the interesting-bits of the URL.
 		url = url.replace(" ", "_");
 
-		try{ url_browse.openURL(url); // Use the BulletproofLauncher
-		} catch(Exception e){
+		try {
+			url_browse.openURL(url); // Use the BulletproofLauncher
+		} catch (Exception e) {
 			JOptionPane.showMessageDialog(parent,
 					"Resource cannot not be opened.\n" +
 							"This is likely the result of:\n\n" +
@@ -295,10 +291,11 @@ public class gui_globals{
 
 	/**
 	 * Produce a titled border of the style used by the STiki GUI.
+	 *
 	 * @param title Title text which should be shown on the border
 	 * @return A TitledBorder with 'title' center straddling the border.
 	 */
-	public static CompoundBorder produce_titled_border(String title){
+	public static CompoundBorder produce_titled_border(String title) {
 
 		// Create the three borders outlining major components
 		title = title.toUpperCase();
@@ -312,35 +309,37 @@ public class gui_globals{
 
 		// Compound the borders for each use
 		Border imd = BorderFactory.createCompoundBorder(buffer_out, border);
-		return(BorderFactory.createCompoundBorder(imd, buffer_in));
+		return (BorderFactory.createCompoundBorder(imd, buffer_in));
 	}
 
 	/**
 	 * Create a multiline-plain-text JLabel which is left-justified.
+	 *
 	 * @param text Text which should appear on the JLabel
-	 * @return A new JLabel object, with left-justified "text", and with 
+	 * @return A new JLabel object, with left-justified "text", and with
 	 * "text" wrapped onto multiple lines, if necessary.
 	 */
-	public static JLabel plain_multiline_label(String text){
+	public static JLabel plain_multiline_label(String text) {
 		JLabel label = new JLabel("<HTML>" + text + "</HTML>");
 		label.setFont(gui_globals.PLAIN_NORMAL_FONT);
 		label.setHorizontalAlignment(SwingConstants.CENTER);
 		label.setHorizontalTextPosition(SwingConstants.CENTER);
-		return(label);
+		return (label);
 	}
 
 	/**
 	 * Create a multiline-plain-text JLabel which is completely centered.
+	 *
 	 * @param text Text which should appear on the JLabel
-	 * @return A new JLabel object, with centered-text "text", and with 
+	 * @return A new JLabel object, with centered-text "text", and with
 	 * "text" wrapped onto multiple lines, if necessary.
 	 */
-	public static JLabel plain_centered_multiline_label(String text){
+	public static JLabel plain_centered_multiline_label(String text) {
 		JLabel label = new JLabel("<HTML><CENTER>" + text + "</CENTER></HTML>");
 		label.setFont(gui_globals.PLAIN_NORMAL_FONT);
 		label.setHorizontalAlignment(SwingConstants.CENTER);
 		label.setHorizontalTextPosition(SwingConstants.CENTER);
-		return(label);
+		return (label);
 	}
 
 	/**
@@ -348,97 +347,104 @@ public class gui_globals{
 	 * Thus, if one wants centered and left-justified elements, this
 	 * method/hack is used, with uses HorizontalGlue to center data on a
 	 * fully sized, but left-justified panel.
+	 *
 	 * @param comp Component which should be centered
 	 * @return Panel containing only `comp' -- the panel is left justified,
 	 * but 'comp' will be centered within. The panel is width greedy.
 	 */
-	public static JPanel center_comp_with_glue(Component comp){
+	public static JPanel center_comp_with_glue(Component comp) {
 		JPanel newpanel = new JPanel();
 		newpanel.setLayout(new BoxLayout(newpanel, BoxLayout.X_AXIS));
 		newpanel.add(Box.createHorizontalGlue());
 		newpanel.add(comp);
 		newpanel.add(Box.createHorizontalGlue());
 		newpanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		return(newpanel);
+		return (newpanel);
 	}
 
 	/**
 	 * Create a panel containing a horizontal separator.
+	 *
 	 * @return JPanel containing a fixed width horizontal separator
 	 */
-	public static JPanel create_horiz_separator(){
+	public static JPanel create_horiz_separator() {
 		JPanel sep_panel = new JPanel();
 		JSeparator sep = new JSeparator(SwingConstants.HORIZONTAL);
 		sep_panel.add(sep);
-		sep_panel.setLayout(new GridLayout(0,1));
+		sep_panel.setLayout(new GridLayout(0, 1));
 		sep_panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
-		return(sep_panel);
+		return (sep_panel);
 	}
 
 	/**
 	 * Create a panel containing a vertical separator.
+	 *
 	 * @return JPanel containing a fixed width vertical separator
 	 */
-	public static JPanel create_vert_separator(){
+	public static JPanel create_vert_separator() {
 		JPanel sep_panel = new JPanel();
 		JSeparator sep = new JSeparator(SwingConstants.VERTICAL);
 		sep_panel.add(sep);
-		sep_panel.setLayout(new GridLayout(1,0));
+		sep_panel.setLayout(new GridLayout(1, 0));
 		sep_panel.setMaximumSize(new Dimension(1, Integer.MAX_VALUE));
-		return(sep_panel);
+		return (sep_panel);
 	}
 
 	/**
-	 * Create a label to introduce a field/link -- per STiki style. 
+	 * Create a label to introduce a field/link -- per STiki style.
 	 * (currently, this means bold and right-justified, with RHS spacer).
+	 *
 	 * @param text Text which the label should contain
 	 * @return A STiki-styled introductory-JLabel, with text 'text'
 	 */
-	public static JLabel create_intro_label(String text){
+	public static JLabel create_intro_label(String text) {
 		JLabel label = new JLabel(text);
 		label.setFont(gui_globals.BOLD_NORMAL_FONT);
 		label.setAlignmentX(JLabel.RIGHT_ALIGNMENT);
 		label.setHorizontalAlignment(JLabel.RIGHT);
 		label.setBorder(BorderFactory.createEmptyBorder(0, 0, 0,
 				gui_globals.INTRO_LABEL_SPACER)); // Right-justified border
-		return(label);
+		return (label);
 	}
 
 	/**
 	 * Create a text label that should contain data -- per the STiki style.
+	 *
 	 * @param text Text which the label should contain
 	 * @return A STiki-styled data-JLabel, with text 'text'
 	 */
-	public static JLabel create_data_label(String text){
+	public static JLabel create_data_label(String text) {
 		JLabel label = new JLabel(text);
 		label.setFont(gui_globals.PLAIN_NORMAL_FONT);
-		return(label);
+		return (label);
 	}
 
 	/**
 	 * Create a text-field that should contain data -- per the STiki style.
+	 *
 	 * @param text Text which the field should contain
 	 * @return A STiki-styled data-JTextField, with text 'text'
 	 */
-	public static JTextField create_data_field(String text){
+	public static JTextField create_data_field(String text) {
 		JTextField field = new JTextField(text);
 		field.setBorder(null);
 		field.setOpaque(false);
 		field.setEditable(false);
 		field.setFont(gui_globals.PLAIN_NORMAL_FONT);
-		return(field);
+		return (field);
 	}
 
 	/**
 	 * Create a JButton with text that appears as a hyperlink.
-	 * @param text Hyperlink-text. That to be displayed on the button
+	 *
+	 * @param text      Hyperlink-text. That to be displayed on the button
 	 * @param red_color If "true" then the returned link will be red,
-	 * consistent with non-existing links. If "false", then the link will
-	 * be a blue color consistent with existing links.
-	 * @param listener ActionListener handling button events
+	 *                  consistent with non-existing links. If "false", then the link will
+	 *                  be a blue color consistent with existing links.
+	 * @param listener  ActionListener handling button events
 	 */
 	public static JButton create_link(String text, boolean red_color,
-	                                  ActionListener listener){
+	                                  ActionListener listener) {
 
 		JButton button = new JButton(text);
 		button.setFont(gui_globals.get_link_font(false, red_color));
@@ -449,7 +455,7 @@ public class gui_globals{
 		button.setBackground(Color.LIGHT_GRAY);
 		button.addActionListener(listener);
 		button.setMargin(new Insets(0, 0, 0, 0));
-		return(button);
+		return (button);
 	}
 
 	/**
@@ -457,7 +463,7 @@ public class gui_globals{
 	 * a hyperlink of smaller font size.
 	 */
 	public static JButton create_small_link(String text, boolean red_color,
-	                                        ActionListener listener){
+	                                        ActionListener listener) {
 
 		JButton button = new JButton(text);
 		button.setFont(gui_globals.get_link_font(true, red_color));
@@ -468,78 +474,82 @@ public class gui_globals{
 		button.setBackground(Color.LIGHT_GRAY);
 		button.addActionListener(listener);
 		button.setMargin(new Insets(0, 0, 0, 0));
-		return(button);
+		return (button);
 	}
 
 	/**
 	 * Return a font characteristic of the link style (blue, underlined).
-	 * @param small If "true" return a small sized font, else make the 
-	 * link font a more "normal" sized one.
+	 *
+	 * @param small     If "true" return a small sized font, else make the
+	 *                  link font a more "normal" sized one.
 	 * @param red_color If "true" then the returned link will be red,
-	 * consistent with non-existing links. If "false", then the link will
-	 * be a blue color consistent with existing links.
+	 *                  consistent with non-existing links. If "false", then the link will
+	 *                  be a blue color consistent with existing links.
 	 * @return A font suitable for creating text that appears as a hyperlink
 	 */
-	public static Font get_link_font(boolean small, boolean red_color){
+	public static Font get_link_font(boolean small, boolean red_color) {
 		Font font;
-		if(!small)
+		if (!small)
 			font = gui_globals.PLAIN_NORMAL_FONT;
 		else font = gui_globals.SMALL_NORMAL_FONT;
 		Map<TextAttribute, Object> map = new Hashtable<TextAttribute, Object>();
 		map.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
 
-		if(red_color)
+		if (red_color)
 			map.put(TextAttribute.FOREGROUND, new Color(153, 0, 0));
 		else map.put(TextAttribute.FOREGROUND, new Color(0, 0, 153));
 
 		font = font.deriveFont(map);
-		return(font);
+		return (font);
 	}
 
 	/**
 	 * Create a JCheckBoxMenuItem per STiki's style.
-	 * @param text Text to label the JCheckboxMenuItem (CBMI) being created
+	 *
+	 * @param text     Text to label the JCheckboxMenuItem (CBMI) being created
 	 * @param keyevent Mnemonic KeyEvent character to associate with the CBMI
-	 * @param enabled Whether or not the returned CBMI is enabled
+	 * @param enabled  Whether or not the returned CBMI is enabled
 	 * @param selected Whether or not the returned CBMI is selected
 	 * @return New JRB, labeled as 'text' with mnenomonic 'keyevent'.
 	 */
 	public static JCheckBoxMenuItem checkbox_item(String text, int keyevent,
-	                                              boolean enabled, boolean selected){
+	                                              boolean enabled, boolean selected) {
 		JCheckBoxMenuItem cbmi = new JCheckBoxMenuItem(text);
 		cbmi.setFont(gui_globals.PLAIN_NORMAL_FONT);
 		cbmi.setMnemonic(keyevent);
 		cbmi.setEnabled(enabled);
 		cbmi.setSelected(selected);
-		return(cbmi);
+		return (cbmi);
 	}
 
 	/**
 	 * Create a JRadioButtoMenuItem per STiki's style.
-	 * @param text Text to label the JRadioButtonMenuItem (JRB) being created
+	 *
+	 * @param text     Text to label the JRadioButtonMenuItem (JRB) being created
 	 * @param keyevent Mnemonic KeyEvent character to associate with the JRB
-	 * @param enabled Whether or not the returned JRB is enabled
+	 * @param enabled  Whether or not the returned JRB is enabled
 	 * @param selected Whether or not the returned JRB is selected
 	 * @return New JRB, labeled as 'text' with mnenomonic 'keyevent'.
 	 */
 	public static JRadioButtonMenuItem radiobutton_item(String text,
-	                                                    int keyevent, boolean enabled, boolean selected){
+	                                                    int keyevent, boolean enabled, boolean selected) {
 		JRadioButtonMenuItem jrb = new JRadioButtonMenuItem(text);
 		jrb.setFont(gui_globals.PLAIN_NORMAL_FONT);
 		jrb.setMnemonic(keyevent);
 		jrb.setEnabled(enabled);
 		jrb.setSelected(selected);
-		return(jrb);
+		return (jrb);
 	}
 
 	/**
 	 * Return a set indicating at while "milestones" a user should be warned
 	 * about over-use of the pass button, where "milestones" are defined to
 	 * be career uses of the pass button.
+	 *
 	 * @return Set containing "pass use" milestones at which to pop the
 	 * "pass overuse warning".
 	 */
-	public static Set<Integer> set_pass_warn_points(){
+	public static Set<Integer> set_pass_warn_points() {
 		Set<Integer> warn_points = new TreeSet<Integer>();
 		warn_points.add(10); // Somewhat arbitrary but less frequent notifies
 		warn_points.add(50);
@@ -547,26 +557,27 @@ public class gui_globals{
 		warn_points.add(250);
 		warn_points.add(500);
 		warn_points.add(1000);
-		return(warn_points);
+		return (warn_points);
 	}
 
 	/**
 	 * Given a Java color object, return its hex representation
+	 *
 	 * @param c Java color object
 	 * @return Hex representation of 'c', preceeded by "#"
 	 */
-	public static String color_to_hex(Color c){
+	public static String color_to_hex(Color c) {
 		StringBuilder sb = new StringBuilder("#");
 
-		if(c.getRed() < 16)
+		if (c.getRed() < 16)
 			sb.append('0');
 		sb.append(Integer.toHexString(c.getRed()));
 
-		if(c.getGreen() < 16)
+		if (c.getGreen() < 16)
 			sb.append('0');
 		sb.append(Integer.toHexString(c.getGreen()));
 
-		if(c.getBlue() < 16)
+		if (c.getBlue() < 16)
 			sb.append('0');
 		sb.append(Integer.toHexString(c.getBlue()));
 
@@ -575,27 +586,29 @@ public class gui_globals{
 
 	/**
 	 * Convert a hex representation of a color to a Java color
+	 *
 	 * @param colorStr Color described in hex representation. May or may
-	 * not include the preceeding '#' character.
+	 *                 not include the preceeding '#' character.
 	 * @return Java color representation of 'colorStr'
 	 */
-	public static Color hex_to_rgb(String colorStr){
+	public static Color hex_to_rgb(String colorStr) {
 
-		if(colorStr.charAt(0) == '#')
+		if (colorStr.charAt(0) == '#')
 			colorStr = colorStr.substring(1);
 		return new Color(
-				Integer.valueOf(colorStr.substring(0,2), 16),
-				Integer.valueOf(colorStr.substring(2,4), 16),
-				Integer.valueOf(colorStr.substring(4,6), 16));
+				Integer.valueOf(colorStr.substring(0, 2), 16),
+				Integer.valueOf(colorStr.substring(2, 4), 16),
+				Integer.valueOf(colorStr.substring(4, 6), 16));
 	}
 
 	/**
 	 * Pop the warning dialog w.r.t over-use of the "PASS" classification.
-	 * @param parent Component from which the dialog should be popped
+	 *
+	 * @param parent          Component from which the dialog should be popped
 	 * @param times_past_used The number of times "pass" has been used
 	 */
 	public static void pop_overused_pass_warning(JComponent parent,
-	                                             int times_past_used){
+	                                             int times_past_used) {
 		JOptionPane.showMessageDialog(parent,
 				"STiki monitors your use of the \"pass\" button and asks\n" +
 						"you to be careful with its use. If you are uncertain of\n" +
@@ -620,15 +633,16 @@ public class gui_globals{
 
 	/**
 	 * Pop the warning dialog regrading "don't template the regulars".
+	 *
 	 * @param parent Component from which the dialog should be popped
 	 */
-	public static void pop_dttr_warning(JComponent parent){
+	public static void pop_dttr_warning(JComponent parent) {
 		JOptionPane.showMessageDialog(parent,
 				"The user you are about to revert has at least 50\n" +
 						"article edits. Experienced users are not infallible,\n" +
 						"so if upon reconsideration the edit is unconstructive,\n" +
 						"it should be reverted.\n" +
-						"\n"  +
+						"\n" +
 						"However, when dealing with such users, wiki-etiquette\n" +
 						"dictates that a personalized user message or article\n" +
 						"talk page thread is preferred to issuing a standardized\n" +

@@ -1,50 +1,33 @@
 package executables;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.WindowConstants;
-
 import core_objects.metadata;
 import core_objects.pair;
 import core_objects.stiki_utils;
 import core_objects.stiki_utils.QUEUE_TYPE;
 import core_objects.stiki_utils.SCORE_SYS;
 import db_client.client_interface;
-
 import gui_edit_queue.edit_queue;
 import gui_edit_queue.gui_display_pkg;
 import gui_menus.gui_menu_bar;
-import gui_panels.gui_button_panel;
-import gui_panels.gui_comment_panel;
-import gui_panels.gui_diff_panel;
-import gui_panels.gui_login_panel;
-import gui_panels.gui_metadata_panel;
-import gui_panels.gui_revert_panel;
+import gui_panels.*;
 import gui_panels.gui_comment_panel.COMMENT_TAB;
-import gui_support.gui_agf_dialogue;
-import gui_support.gui_fb_handler;
-import gui_support.gui_filesys_images;
-import gui_support.gui_globals;
-import gui_support.gui_ping_server;
-import gui_support.gui_settings;
+import gui_support.*;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Andrew G. West - stiki_frontend_driver.java - This class is a driver
  * for the STiki vandalism detection GUI (i.e., the front-end). This class
- * launches the GUI and all the backend support it requires. 
+ * launches the GUI and all the backend support it requires.
  */
 @SuppressWarnings("serial")
-public class stiki_frontend_driver extends JFrame{
+
+public class stiki_frontend_driver extends JFrame {
 
 	// **************************** PUBLIC FIELDS ****************************
 
@@ -53,7 +36,9 @@ public class stiki_frontend_driver extends JFrame{
 	/**
 	 * Classification types available to end-users.
 	 */
-	public enum FB_TYPE{INNOCENT, PASS, AGF, GUILTY, GUILTY_4IM};
+	public enum FB_TYPE {
+		INNOCENT, PASS, AGF, GUILTY, GUILTY_4IM
+	}
 
 
 	// ******* VISUAL ELEMENTS ********
@@ -148,7 +133,7 @@ public class stiki_frontend_driver extends JFrame{
 	 * "INNOCENT -> PASS" case, (the edit was deleted).
 	 */
 	private static pair<FB_TYPE, Long> last_classification =
-			new pair<FB_TYPE, Long>(FB_TYPE.PASS, 0L);
+			new pair<>(FB_TYPE.PASS, 0L);
 
 	/**
 	 * If we want to warn the user about their classification (e.g. DTTR) and
@@ -172,16 +157,17 @@ public class stiki_frontend_driver extends JFrame{
 	/**
 	 * Driver method. Check network connectivity. If connected,
 	 * launch the STiki GUI. Else shutdown and print error message
+	 *
 	 * @param args No arguments are required by this method
 	 */
-	public static void main(String[] args) throws Exception{
+	public static void main(String[] args) throws Exception {
 
 		client_interface ci = new client_interface();
-		if(ci.con_client.con != null){
-			if(req_version(ci))
+		if (ci.con_client.con != null) {
+			if (req_version(ci))
 				new stiki_frontend_driver(ci);
 			else System.exit(1);
-		} else{ // If connectivity, launch the GUI
+		} else { // If connectivity, launch the GUI
 			JFrame frame = new JFrame();
 			frame.setIconImage(gui_filesys_images.ICON_64);
 			JOptionPane.showMessageDialog(frame,
@@ -205,9 +191,10 @@ public class stiki_frontend_driver extends JFrame{
 	/**
 	 * Construct a [stiki_frontend_driver] -- Intializing all visual
 	 * components, and making them visible to the end user.
+	 *
 	 * @param ci Connection handling all client requests to STiki server
 	 */
-	public stiki_frontend_driver(client_interface ci) throws Exception{
+	public stiki_frontend_driver(client_interface ci) throws Exception {
 
 		// Import persistent settings from file
 		// This MUST be the first thing to happen
@@ -242,7 +229,7 @@ public class stiki_frontend_driver extends JFrame{
 		this.setJMenuBar(menu_bar); // Menu must be last
 
 		// Then populate the center-panel
-		JPanel center_panel = new JPanel(new BorderLayout(0,0));
+		JPanel center_panel = new JPanel(new BorderLayout(0, 0));
 		diff_browser.setBorder(gui_globals.
 				produce_titled_border("DIFF-Browser"));
 		center_panel.add(diff_browser, BorderLayout.CENTER);
@@ -266,25 +253,26 @@ public class stiki_frontend_driver extends JFrame{
 
 	/**
 	 * Exit the STiki GUI, gracefully closing all components/connections.
+	 *
 	 * @param system_shutdown If TRUE, then 'System.exit()' will be fired,
-	 * effectively terminating any code. If FALSE, the GUI will just be
-	 * made invisible, permitting other code to run.
+	 *                        effectively terminating any code. If FALSE, the GUI will just be
+	 *                        made invisible, permitting other code to run.
 	 */
-	public void exit_handler(boolean system_shutdown){
+	public void exit_handler(boolean system_shutdown) {
 
 		gui_settings.save_properties(); // Persistent user settings
 
-		try{ // Shutdown cleanly terminates all DB cons/structs
+		try { // Shutdown cleanly terminates all DB cons/structs
 			WORKER_THREADS.shutdown();
 			edit_queue.shutdown();
 			client_interface.shutdown();
 			WORKER_THREADS.shutdownNow(); // Kill infinite loops
-		} catch(Exception e){
+		} catch (Exception e) {
 			System.out.println("Error during STiki shutdown:");
 			e.printStackTrace();
 		} // Try-catch required for interface compliance
 
-		if(system_shutdown)
+		if (system_shutdown)
 			System.exit(0); // Hard shut-down
 		else this.setVisible(false); // Soft shut-down
 	}
@@ -293,14 +281,15 @@ public class stiki_frontend_driver extends JFrame{
 	 * In the event that a DB call fails due to a broken pipe or unforeseen
 	 * CommunicationsException, this method can be called in order to
 	 * obtain a new connection, notify the user, and avoid a hard-crash.
+	 *
 	 * @param show_message Whether a notification dialog should be popped,
-	 * asumming the reset is succesful. If reset fails; a dialog will be shown
-	 * regardless, and the STiki GUI will be closed.
+	 *                     asumming the reset is succesful. If reset fails; a dialog will be shown
+	 *                     regardless, and the STiki GUI will be closed.
 	 */
 	public void reset_connection(boolean show_message)
-			throws Exception{
+			throws Exception {
 		this.client_interface = new client_interface();
-		if(this.client_interface.con_client.con == null){
+		if (this.client_interface.con_client.con == null) {
 			JOptionPane.showMessageDialog(this,
 					"Unable to connect to the STiki back-end:\n" +
 							"The program will now exit. Try to restart STiki.\n" +
@@ -308,7 +297,7 @@ public class stiki_frontend_driver extends JFrame{
 					"Error: Back-end connectivity is required",
 					JOptionPane.ERROR_MESSAGE);
 			System.exit(1);
-		} else if(show_message)
+		} else if (show_message)
 			JOptionPane.showMessageDialog(this,
 					"Your connection to the STiki database was\n" +
 							"lost. A new connection has been obtained.",
@@ -318,11 +307,12 @@ public class stiki_frontend_driver extends JFrame{
 
 	/**
 	 * Map a user-classification to DB and on-Wikipedia events.
+	 *
 	 * @param fb_type Type of feedback being left
 	 */
-	public void class_action(FB_TYPE fb_type) throws Exception{
+	public void class_action(FB_TYPE fb_type) throws Exception {
 
-		if(!login_panel.is_state_stable()){
+		if (!login_panel.is_state_stable()) {
 			JOptionPane.showMessageDialog(this,
 					"To classify using STiki, you must log-in.",
 					"Warning: Must login",
@@ -331,9 +321,9 @@ public class stiki_frontend_driver extends JFrame{
 		} // Confirm that the login-panel has an established editing user, if
 		// not, ask user to do so before proceeding.
 
-		if(fb_type.equals(FB_TYPE.PASS)){
+		if (fb_type.equals(FB_TYPE.PASS)) {
 			passes_in_career++;
-			if(gui_globals.set_pass_warn_points().contains(passes_in_career))
+			if (gui_globals.set_pass_warn_points().contains(passes_in_career))
 				gui_globals.pop_overused_pass_warning(
 						this.diff_browser, passes_in_career);
 		} // Monitor over-use of the "PASS" button. This is done at several
@@ -341,10 +331,10 @@ public class stiki_frontend_driver extends JFrame{
 
 		gui_display_pkg edit_pkg = edit_queue.get_cur_edit();
 		metadata md = edit_pkg.page_hist.get(0); // convenience
-		if((fb_type.equals(FB_TYPE.AGF) || fb_type.equals(FB_TYPE.GUILTY) ||
+		if ((fb_type.equals(FB_TYPE.AGF) || fb_type.equals(FB_TYPE.GUILTY) ||
 				fb_type.equals(FB_TYPE.GUILTY_4IM)) &&
 				menu_bar.get_options_menu().get_dttr_policy() &&
-				!secondary_review && edit_pkg.get_user_edit_count() >= 50){
+				!secondary_review && edit_pkg.get_user_edit_count() >= 50) {
 			gui_globals.pop_dttr_warning(this.diff_browser);
 			secondary_review = true;
 			return; // give a second chance at review
@@ -353,26 +343,26 @@ public class stiki_frontend_driver extends JFrame{
 		secondary_review = false;
 
 		boolean login_change = login_panel.check_and_reset_state_change();
-		if((fb_type.equals(FB_TYPE.AGF) || fb_type.equals(FB_TYPE.GUILTY) ||
-				fb_type.equals(FB_TYPE.GUILTY_4IM)) && login_change){
+		if ((fb_type.equals(FB_TYPE.AGF) || fb_type.equals(FB_TYPE.GUILTY) ||
+				fb_type.equals(FB_TYPE.GUILTY_4IM)) && login_change) {
 			edit_queue.refresh_edit_token(login_panel.get_session_cookie());
-			if(login_panel.editor_using_native_rb())
+			if (login_panel.editor_using_native_rb())
 				edit_queue.refresh_rb_token(login_panel.get_session_cookie());
-		}	// If editing user has changed internal to this edit, and
+		}    // If editing user has changed internal to this edit, and
 		// we are going to revert/rollback, then tokens need renewed.
 		// An edit token is ALWAYS needed (for placing user-talk warning)
 
-		if(last_classification.snd == md.rid && fb_type.equals(FB_TYPE.PASS) &&
-				last_classification.fst.equals(FB_TYPE.INNOCENT)){
+		if (last_classification.snd == md.rid && fb_type.equals(FB_TYPE.PASS) &&
+				last_classification.fst.equals(FB_TYPE.INNOCENT)) {
 			client_interface.queues.queue_resurrect(md.rid, md.pid);
 		} // If above criteria are met, we have an INNOCENT->PASS class
 		// change via "back", the lone problematic case.
 
 		// This sanity check should be unnecessary -- but somewhere (cache
 		// clearing?) -- missing tokens aren't getting populated
-		if(edit_pkg.get_token() == null)
+		if (edit_pkg.get_token() == null)
 			edit_pkg.refresh_edit_token(login_panel.get_session_cookie());
-		if(login_panel.editor_using_native_rb() && md.rb_token == null)
+		if (login_panel.editor_using_native_rb() && md.rb_token == null)
 			edit_pkg.refresh_rb_token(login_panel.get_session_cookie());
 
 		// Provide data necessary to provide feedback, wrap as a threaded
@@ -380,19 +370,19 @@ public class stiki_frontend_driver extends JFrame{
 		COMMENT_TAB ct;
 		String usr_talk_msg = null;
 		gui_fb_handler fb_task;
-		if((fb_type.equals(FB_TYPE.GUILTY) || fb_type.equals(FB_TYPE.GUILTY_4IM))
+		if ((fb_type.equals(FB_TYPE.GUILTY) || fb_type.equals(FB_TYPE.GUILTY_4IM))
 				&& stiki_utils.queue_to_type(edit_pkg.source_queue).equals(
 				QUEUE_TYPE.VANDALISM))
 			ct = COMMENT_TAB.VAND;
-		else if((fb_type.equals(FB_TYPE.GUILTY) || fb_type.equals(FB_TYPE.GUILTY_4IM))
+		else if ((fb_type.equals(FB_TYPE.GUILTY) || fb_type.equals(FB_TYPE.GUILTY_4IM))
 				&& stiki_utils.queue_to_type(edit_pkg.source_queue).equals(
 				QUEUE_TYPE.LINK_SPAM))
 			ct = COMMENT_TAB.SPAM;
-		else if(fb_type.equals(FB_TYPE.AGF)){
+		else if (fb_type.equals(FB_TYPE.AGF)) {
 			ct = COMMENT_TAB.AGF;
-			if(menu_bar.get_options_menu().get_agf_comment_policy()){
+			if (menu_bar.get_options_menu().get_agf_comment_policy()) {
 				usr_talk_msg = new gui_agf_dialogue(this).get_result(edit_pkg);
-				if(usr_talk_msg.equals(gui_agf_dialogue.ABANDON_MSG))
+				if (usr_talk_msg.equals(gui_agf_dialogue.ABANDON_MSG))
 					return; // If user abandons the revert in-dialogue
 			} // Users can choose whether or not to customize AGF messages
 		} else ct = COMMENT_TAB.VOID;
@@ -409,13 +399,12 @@ public class stiki_frontend_driver extends JFrame{
 		WORKER_THREADS.submit(fb_task); // GIVE THE FB-TASK TO A THREAD
 
 		// Configure functionality of the "back" button
-		if(fb_type.equals(FB_TYPE.GUILTY) || fb_type.equals(FB_TYPE.GUILTY_4IM)
+		if (fb_type.equals(FB_TYPE.GUILTY) || fb_type.equals(FB_TYPE.GUILTY_4IM)
 				|| fb_type.equals(FB_TYPE.AGF))
 			this.button_panel.back_button_enabled(false); // "back" button
 		else this.button_panel.back_button_enabled(true);
-		last_classification = new pair<FB_TYPE, Long>( // Store result
-				fb_type, edit_queue.get_cur_edit().metadata.rid);
-
+		//Store result
+		last_classification = new pair<>(fb_type, edit_queue.get_cur_edit().metadata.rid);
 		this.advance_revision(false); // ALL CLASSIFICATIONS; advance RID
 	}
 
@@ -423,60 +412,72 @@ public class stiki_frontend_driver extends JFrame{
 	 * Take necessary action when the back button is pressed (change
 	 * displayed revision, dis-able some buttons, etc.)
 	 */
-	public void back_button_pressed() throws Exception{
+	public void back_button_pressed() throws Exception {
 		this.advance_revision(true);
 		this.button_panel.back_button_enabled(false);
 	}
 
 	/**
 	 * Accessor method to the "passes_in_career" variable.
+	 *
 	 * @return The number of passes in the career of the STiki user. Note
 	 * this value is initialized by a call to persistent settings and then
 	 * incremented over the course of each user session.
 	 */
-	public int get_passes_in_career(){
-		return(passes_in_career);
+	public int get_passes_in_career() {
+		return (passes_in_career);
 	}
 
+	public static int getMaxChildComponentWidth(JPanel parentComponent) {
+		int componentMaxWidth = 0;
+		for (Component itrComponent : parentComponent.getComponents()) {
+			if (itrComponent.getPreferredSize().width > componentMaxWidth) {
+				componentMaxWidth = itrComponent.getPreferredSize().width;
+			}
+		}
+		return componentMaxWidth;
+	}
 
 	// *************************** PRIVATE METHODS ***************************
 
 	/**
 	 * Determine if the current version of STiki meets minimum version reqs.
+	 *
 	 * @param ci Client connection to the central STiki database, where
-	 * the minimum required version is notated.
+	 *           the minimum required version is notated.
 	 * @return TRUE if the current version meets minimum requirements.
 	 * Otherwise return FALSE.
 	 */
-	private static boolean req_version(client_interface ci) throws Exception{
+	private static boolean req_version(client_interface ci) throws Exception {
 
 		int min_version = ci.req_version();
-		if(min_version <= CUR_VERSION)
-			return(true);
-		else{
+		if (min_version <= CUR_VERSION)
+			return (true);
+		else {
 			JFrame frame = new JFrame();
 			frame.setIconImage(gui_filesys_images.ICON_64);
 			JOptionPane.showMessageDialog(frame,
 					"An updated version of STiki is required!\n\n" +
-							"Your current version is insufficient. Most likely\n" +
-							"this is because the WMF has made changes that\n" +
-							"fundamentally broke your current version. A new  \n" +
-							"version is available at [[WP:STiki]], and more\n" +
-							"information should be on the talk page.\n\n" +
-							"The software will now exit.\n\n",
+					"Your current version is insufficient. Most likely\n" +
+					"this is because the WMF has made changes that\n" +
+					"fundamentally broke your current version. A new  \n" +
+					"version is available at [[WP:STiki]], and more\n" +
+					"information should be on the talk page.\n\n" +
+					"The software will now exit.\n\n",
 					"Error: Software update required",
 					JOptionPane.ERROR_MESSAGE);
-			return(false);
+			return (false);
 		} // error message if version is insufficient
 
 	}
 
 	/**
 	 * Move visual components forward to the next revision.
+	 *
 	 * @param previous If TRUE, instruct the queue to re-show the previous
-	 * edit, rather than advancing onward (the FALSE case).
+	 *                 edit, rather than advancing onward (the FALSE case).
 	 */
-	private void advance_revision(boolean previous) throws Exception{
+	private void advance_revision(boolean previous) throws Exception {
 
 		// Possible transition to new GUI setup (vandalism, spam, etc.)
 		switch_mode_if_needed();
@@ -494,13 +495,13 @@ public class stiki_frontend_driver extends JFrame{
 	 * If the GUI "mode/type" (spam, vandalism, etc.) needs changed,
 	 * have the visual elements of the GUI make that change
 	 */
-	private void switch_mode_if_needed(){
+	private void switch_mode_if_needed() {
 		QUEUE_TYPE cur_type = menu_bar.selected_type();
-		if(cur_type != last_q_type){
+		if (cur_type != last_q_type) {
 			button_panel.change_type_setup(cur_type);
 			comment_panel.change_queue_type(cur_type);
 			last_q_type = cur_type;
-			if(cur_type == QUEUE_TYPE.LINK_SPAM)
+			if (cur_type == QUEUE_TYPE.LINK_SPAM)
 				menu_bar.get_options_menu().set_hyperlink_policy(true);
 		} // Handle broad, then queue-specific change elements
 	}
@@ -508,7 +509,7 @@ public class stiki_frontend_driver extends JFrame{
 	/**
 	 * Initialize the left-sidebar of the GUI
 	 */
-	private JPanel create_left_panel(){
+	private JPanel create_left_panel() {
 		JPanel left_sidepanel = new JPanel();
 		left_sidepanel.setLayout(new BoxLayout(left_sidepanel,
 				BoxLayout.Y_AXIS));
@@ -528,19 +529,25 @@ public class stiki_frontend_driver extends JFrame{
 		left_sidepanel.add(Box.createVerticalGlue());
 		left_sidepanel.add(gui_globals.center_comp_with_glue(comment_panel));
 
-		// CRITICAL: Set properties about the layout
-		// Recall, BorderLayout ignores max/min size settings,
-		// instead respects only preferred ones
+		/* CRITICAL: Set properties about the layout
+		Recall, BorderLayout ignores max/min size settings,
+		instead respects only preferred ones
+
+		Here, we find the largest component in "left_sidepanel", and set the
+		preferred size to the width of that
+		*/
+
 		left_sidepanel.setPreferredSize(new Dimension(
-				button_panel.getPreferredSize().width, Integer.MAX_VALUE));
-		return(left_sidepanel);
+				getMaxChildComponentWidth(left_sidepanel), Integer.MAX_VALUE));
+		return (left_sidepanel);
 	}
 
 	/**
 	 * Intialize the GUI bottom panel (metadata and revert-data sections).
+	 *
 	 * @return JPanel object which composes the "bottom panel"
 	 */
-	private JPanel initialize_bottom_panel(){
+	private JPanel initialize_bottom_panel() {
 
 		// Beautify components going in bottom-panel
 		metadata_panel.setBorder(gui_globals.
@@ -549,17 +556,17 @@ public class stiki_frontend_driver extends JFrame{
 				produce_titled_border("Last Revert"));
 
 		// Straightforward layout
-		JPanel bottom_panel = new JPanel(new BorderLayout(0,0));
+		JPanel bottom_panel = new JPanel(new BorderLayout(0, 0));
 		bottom_panel.add(revert_panel, BorderLayout.WEST);
 		bottom_panel.add(metadata_panel, BorderLayout.CENTER);
-		return(bottom_panel);
+		return (bottom_panel);
 	}
 
 	/**
 	 * Set the size and position of the STiki window. We attempt to do this
 	 * using persistent settings from file, but also have a default option.
 	 */
-	private void window_size_position(){
+	private void window_size_position() {
 		int win_width = gui_settings.get_int_def(
 				gui_settings.SETTINGS_INT.win_width, Integer.MIN_VALUE);
 		int win_height = gui_settings.get_int_def(
@@ -569,9 +576,9 @@ public class stiki_frontend_driver extends JFrame{
 		int win_locy = gui_settings.get_int_def(
 				gui_settings.SETTINGS_INT.win_loxy, Integer.MIN_VALUE);
 
-		if(win_locy == Integer.MIN_VALUE || win_locx == Integer.MIN_VALUE ||
+		if (win_locy == Integer.MIN_VALUE || win_locx == Integer.MIN_VALUE ||
 				win_height == Integer.MIN_VALUE ||
-				win_width == Integer.MIN_VALUE){
+				win_width == Integer.MIN_VALUE) {
 			Dimension screen_size = this.getToolkit().getScreenSize();
 			win_width = (screen_size.width * 8 / 10);
 			win_height = (screen_size.height * 8 / 10);
@@ -583,11 +590,13 @@ public class stiki_frontend_driver extends JFrame{
 
 	/**
 	 * Return the event-handler for when the main frame is exited
+	 *
 	 * @return An event-handler (to be added as listener) for the exit process.
 	 */
-	private WindowAdapter get_exit_handler(){
-		return(new WindowAdapter(){
-			public void windowClosing(WindowEvent w){
+	private WindowAdapter get_exit_handler() {
+		return (new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent w) {
 				exit_handler(true);
 			}  // Smoothly shut-down all DB structs/connections
 		}); // An anonymous class implements the only WindowEvent we care about

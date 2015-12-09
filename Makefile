@@ -15,10 +15,7 @@
 JC = javac
 
 	# Optimization or other option flags
-OPT = -target 1.5	-source 1.5		# Everything should be Java 1.5 compatible?
-
-	# Cleanup macro
-UNMAKE = rm *.class */*.class
+OPT = -target 1.8 -source 1.8 -Xlint:all
 
 	# We simply group all Java files together, regardless of the 
 	# specific-dependency any executable(s) hold over them.
@@ -50,7 +47,9 @@ audit: $(ALL_FILES)
 	@echo [Audit tool compilation successful!]
 
 clean:
-	$(UNMAKE)
+	rm -f *.class
+	rm -f */*.class
+	rm -R -f out
 
 
 #################################### END ####################################

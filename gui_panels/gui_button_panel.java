@@ -1,33 +1,23 @@
 package gui_panels;
 
+import core_objects.stiki_utils.QUEUE_TYPE;
 import executables.stiki_frontend_driver;
 import executables.stiki_frontend_driver.FB_TYPE;
 import gui_support.gui_globals;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Insets;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-
-import core_objects.stiki_utils.QUEUE_TYPE;
-
 /**
  * Andrew G. West - gui_button_panel.java - This class implements the panel
  * containing the guilty/innocent/pass, as well as "back" buttons.
  */
-@SuppressWarnings("serial")
 public class gui_button_panel extends JPanel implements
-		ActionListener, KeyListener{
+		ActionListener, KeyListener {
 
 	// **************************** PRIVATE FIELDS ***************************
 
@@ -58,7 +48,7 @@ public class gui_button_panel extends JPanel implements
 	private JButton button_innocent;
 
 	/**
-	 * "Back" button to return to the previously classified edit. 
+	 * "Back" button to return to the previously classified edit.
 	 */
 	private JButton button_back;
 
@@ -77,12 +67,13 @@ public class gui_button_panel extends JPanel implements
 	// ***************************** CONSTRUCTORS ****************************
 
 	/**
-	 * Construct a [gui_button_panel()], and set the initial state 
+	 * Construct a [gui_button_panel()], and set the initial state
+	 *
 	 * @param parent GUI manager class, to pass off button press actions
-	 * @param type Initial queue type (spam, vandalism), so that the
-	 * panel state can be initialized accordingly.
+	 * @param type   Initial queue type (spam, vandalism), so that the
+	 *               panel state can be initialized accordingly.
 	 */
-	public gui_button_panel(stiki_frontend_driver parent, QUEUE_TYPE type){
+	public gui_button_panel(stiki_frontend_driver parent, QUEUE_TYPE type) {
 
 		// Critically, the GUI parent class
 		this.parent = parent;
@@ -148,15 +139,21 @@ public class gui_button_panel extends JPanel implements
 		guilty_subpanel.add(button_guilty);
 		guilty_subpanel.add(button_4im);
 		
-			/* We assume the combined width of the "vandalism" and "4im" buttons are the
-			widest things in the panel and size accordingly
+		/* We calculate the biggest component in the button subpanel.
+		however the combined width of the "vandalism" and "4im" buttons are probably
+		going to be the biggest and the function cannot detect items on the same row,
+		so we calculate that separately and then choose whatever is largest dynamically.
 
-			Observe we also set the [button_guilty] preferred size, so it
-			consumes available space in its sub-sub-panel
-			*/
+		Observe we also set the [button_guilty] preferred size, so it
+		consumes available space in its sub-sub-panel
+		*/
+
+		int topRowWidth = button_guilty.getPreferredSize().width + button_4im.getPreferredSize().width;
+
 		int pref_width = button_agf.getPreferredSize().width;
 		guilty_subpanel.setPreferredSize(new Dimension(
-				(button_guilty.getPreferredSize().width + button_4im.getPreferredSize().width), guilty_subpanel.getPreferredSize().height));
+				Math.max(stiki_frontend_driver.getMaxChildComponentWidth(guilty_subpanel), topRowWidth),
+				guilty_subpanel.getPreferredSize().height));
 		button_guilty.setPreferredSize(new Dimension(
 				pref_width, button_guilty.getPreferredSize().height));
 		button_agf.setPreferredSize(new Dimension(
@@ -209,15 +206,16 @@ public class gui_button_panel extends JPanel implements
 
 	/**
 	 * Change the label of the "guilty/undo" button to reflect queue changes
+	 *
 	 * @param type Type of queue being user (spam, vandalism, etc.)
 	 */
-	public void change_type_setup(QUEUE_TYPE type){
+	public void change_type_setup(QUEUE_TYPE type) {
 
-		if(this.cur_type != type){
-			if(type.equals(QUEUE_TYPE.VANDALISM)){
+		if (this.cur_type != type) {
+			if (type.equals(QUEUE_TYPE.VANDALISM)) {
 				button_guilty.setText("Vandalism");
 				button_guilty.setMnemonic(KeyEvent.VK_V);
-			} else if(type.equals(QUEUE_TYPE.LINK_SPAM)){
+			} else if (type.equals(QUEUE_TYPE.LINK_SPAM)) {
 				button_guilty.setText("Link Spam");
 				button_guilty.setMnemonic(KeyEvent.VK_S);
 			} // Setup the button text and mnemonic
@@ -227,9 +225,10 @@ public class gui_button_panel extends JPanel implements
 
 	/**
 	 * Set whether or not the "back" button should be enabled.
+	 *
 	 * @param enabled TRUE if the "back" button should be enabled. Else, FALSE.
 	 */
-	public void back_button_enabled(boolean enabled){
+	public void back_button_enabled(boolean enabled) {
 		this.button_back.setEnabled(enabled);
 	}
 
@@ -239,21 +238,22 @@ public class gui_button_panel extends JPanel implements
 	/**
 	 * Overriding: Map button-clicks to event-handlers
 	 */
-	public void actionPerformed(ActionEvent event){
-		try{
-			if(event.getSource().equals(this.button_innocent))
+	@Override
+	public void actionPerformed(ActionEvent event) {
+		try {
+			if (event.getSource().equals(this.button_innocent))
 				parent.class_action(FB_TYPE.INNOCENT);
-			else if(event.getSource().equals(this.button_pass))
+			else if (event.getSource().equals(this.button_pass))
 				parent.class_action(FB_TYPE.PASS);
-			else if(event.getSource().equals(this.button_agf))
+			else if (event.getSource().equals(this.button_agf))
 				parent.class_action(FB_TYPE.AGF);
-			else if(event.getSource().equals(this.button_guilty))
+			else if (event.getSource().equals(this.button_guilty))
 				parent.class_action(FB_TYPE.GUILTY);
-			else if(event.getSource().equals(this.button_4im))
+			else if (event.getSource().equals(this.button_4im))
 				parent.class_action(FB_TYPE.GUILTY_4IM);
-			else if(event.getSource().equals(this.button_back))
+			else if (event.getSource().equals(this.button_back))
 				parent.back_button_pressed();
-		} catch(Exception e){
+		} catch (Exception e) {
 			System.out.println("Error internal to button-press handler: ");
 			e.printStackTrace();
 		} // Interface compliance necessitates try-catch block
@@ -264,35 +264,36 @@ public class gui_button_panel extends JPanel implements
 	 * classification without use of the ALT-mnemonic, under certain criteria
 	 * (i.e., when one of the buttons has focus (was last used)).
 	 */
-	public void keyPressed(KeyEvent ke){
-		try{
+	@Override
+	public void keyPressed(KeyEvent ke) {
+		try {
 
-			if(ke.isAltDown())
+			if (ke.isAltDown())
 				return; // Prevent double-actions for mnemonics
 
 			// Map keys to events; get focus for visual intuitiveness.
 			// Extra check needed on "guilty" based on mode
-			if((ke.getKeyChar() == 'v' || ke.getKeyChar() == 'V') &&
-					this.cur_type == QUEUE_TYPE.VANDALISM){
+			if ((ke.getKeyChar() == 'v' || ke.getKeyChar() == 'V') &&
+					this.cur_type == QUEUE_TYPE.VANDALISM) {
 				parent.class_action(FB_TYPE.GUILTY);
 				this.button_guilty.requestFocusInWindow();
-			} else if((ke.getKeyChar() == 's' || ke.getKeyChar() == 'S') &&
-					this.cur_type == QUEUE_TYPE.LINK_SPAM){
+			} else if ((ke.getKeyChar() == 's' || ke.getKeyChar() == 'S') &&
+					this.cur_type == QUEUE_TYPE.LINK_SPAM) {
 				parent.class_action(FB_TYPE.GUILTY);
 				this.button_guilty.requestFocusInWindow();
-			} else if(ke.getKeyChar() == '4'){
+			} else if (ke.getKeyChar() == '4') {
 				parent.class_action(FB_TYPE.GUILTY_4IM);
 				this.button_4im.requestFocusInWindow();
-			} else if(ke.getKeyChar() == 'g' || ke.getKeyChar() == 'G'){
+			} else if (ke.getKeyChar() == 'g' || ke.getKeyChar() == 'G') {
 				parent.class_action(FB_TYPE.AGF);
 				this.button_agf.requestFocusInWindow();
-			} else if(ke.getKeyChar() == 'p' || ke.getKeyChar() == 'P'){
+			} else if (ke.getKeyChar() == 'p' || ke.getKeyChar() == 'P') {
 				parent.class_action(FB_TYPE.PASS);
 				this.button_pass.requestFocusInWindow();
-			} else if(ke.getKeyChar() == 'i' || ke.getKeyChar() == 'I'){
+			} else if (ke.getKeyChar() == 'i' || ke.getKeyChar() == 'I') {
 				parent.class_action(FB_TYPE.INNOCENT);
 				this.button_innocent.requestFocusInWindow();
-			} else if(ke.getKeyChar() == 'b' || ke.getKeyChar() == 'B'){
+			} else if (ke.getKeyChar() == 'b' || ke.getKeyChar() == 'B') {
 				parent.back_button_pressed();
 				this.button_back.requestFocusInWindow();
 			}
@@ -301,13 +302,13 @@ public class gui_button_panel extends JPanel implements
 			// map other panels KeyEvents ontop of this one.
 			//
 			// First up; scrolling functionality in the diff browser
-			if(ke.getKeyCode() == KeyEvent.VK_DOWN ||
+			if (ke.getKeyCode() == KeyEvent.VK_DOWN ||
 					ke.getKeyCode() == KeyEvent.VK_UP ||
 					ke.getKeyCode() == KeyEvent.VK_PAGE_DOWN ||
 					ke.getKeyCode() == KeyEvent.VK_PAGE_UP)
 				parent.diff_browser.keyPressed(ke);
 
-		} catch(Exception e){
+		} catch (Exception e) {
 			System.out.println("Error internal to classification-handler: ");
 			e.printStackTrace();
 		} // Interface compliance necessitates try-catch block
@@ -315,17 +316,23 @@ public class gui_button_panel extends JPanel implements
 
 	// Interface compliance methods for the KeyListener. Unfortunately,
 	// we can't just extend the adapter -- no multiple inheritance in Java.
-	public void keyReleased(KeyEvent ke){}
-	public void keyTyped(KeyEvent ke){}
+	@Override
+	public void keyReleased(KeyEvent ke) {
+	}
+
+	@Override
+	public void keyTyped(KeyEvent ke) {
+	}
 
 
 	// *************************** PRIVATE METHODS ***************************
 
 	/**
-	 * Disable the "SPACEBAR" from acting as a repeater/click on some button. 
+	 * Disable the "SPACEBAR" from acting as a repeater/click on some button.
+	 *
 	 * @param button Button on which space repeating should be nullified.
 	 */
-	private void nullify_space_press(JButton button){
+	private void nullify_space_press(JButton button) {
 		KeyStroke pressed = KeyStroke.getKeyStroke("pressed SPACE");
 		KeyStroke released = KeyStroke.getKeyStroke("released SPACE");
 		InputMap im = button.getInputMap();
