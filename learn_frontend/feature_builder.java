@@ -151,18 +151,16 @@ public class feature_builder {
 	 * Calculate the raw-reputation of a user at timestamp 'now'.
 	 *
 	 * @param user  Identifier of user whose reputation is being valuted
-	 * @param db_rb DB handler for looking up past poor behavior
+	 * @param db_oe DB handler for looking up past poor behavior
 	 * @return Reputation of user 'user' at time 'calc_ts'
 	 */
-	private static double user_reputation(String user,
-	                                      db_off_edits db_oe) throws Exception {
+	private static double user_reputation(String user, db_off_edits db_oe) throws Exception {
 
 		double raw_rep = 0.0;
 		long ts_now = stiki_utils.cur_unix_time();
-		Iterator<Long> iter = db_oe.recent_user_oes(user).iterator();
-		while (iter.hasNext()) {
-			raw_rep += stiki_utils.decay_event(ts_now, iter.next(),
-					stiki_utils.HALF_LIFE);
+
+		for (long itrUser : db_oe.recent_user_oes(user)) {
+			raw_rep += stiki_utils.decay_event(ts_now, itrUser, stiki_utils.HALF_LIFE);
 		} // Iterate over all temporally relevant OE's, adding to rep
 		return (raw_rep);
 	}
@@ -171,18 +169,14 @@ public class feature_builder {
 	 * Calculate the raw-reputation of an article at timestamp 'now'
 	 *
 	 * @param pid   Identifier of article whose reputation is being valuated
-	 * @param db_rb DB handler for looking up past poor behavior
+	 * @param db_oe DB handler for looking up past poor behavior
 	 * @return Reputation of article 'pid' at time 'calc_ts'
 	 */
-	private static double article_reputation(long pid,
-	                                         db_off_edits db_oe) throws Exception {
-
+	private static double article_reputation(long pid, db_off_edits db_oe) throws Exception {
 		double raw_rep = 0.0;
 		long ts_now = stiki_utils.cur_unix_time();
-		Iterator<Long> iter = db_oe.recent_article_oes(pid).iterator();
-		while (iter.hasNext()) {
-			raw_rep += stiki_utils.decay_event(ts_now, iter.next(),
-					stiki_utils.HALF_LIFE);
+		for (long itrPid : db_oe.recent_article_oes(pid)) {
+			raw_rep += stiki_utils.decay_event(ts_now, itrPid, stiki_utils.HALF_LIFE);
 		} // Iterate over all temporally relevant OE's, adding to rep
 		return (raw_rep);
 	}

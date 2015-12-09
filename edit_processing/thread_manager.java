@@ -32,7 +32,7 @@ public class thread_manager implements ThreadFactory {
 	 * Create a [thread_manager] object, initializing all structures.
 	 */
 	public thread_manager() {
-		this.thread_list = new ArrayList<Thread>();
+		this.thread_list = new ArrayList<>();
 	}
 
 

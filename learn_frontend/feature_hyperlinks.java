@@ -43,9 +43,9 @@ public class feature_hyperlinks {
 		String wikitext = "Once upon a time, a [http://www.example.com " +
 				"hyperlink existed] on the Wikipedia";
 
-		List<String> added_text = new ArrayList<String>();
+		List<String> added_text = new ArrayList<>();
 		added_text.add(wikitext);
-		List<String> rem_text = new ArrayList<String>();
+		List<String> rem_text = new ArrayList<>();
 		// process(api_retrieve.process_basic_rid(100), added_text, rem_text, null);
 
 		// NOTE: That this harness does nothing at this time. With DB
@@ -78,7 +78,7 @@ public class feature_hyperlinks {
 		// against the parse for all content added in order to deduce
 		// the "new" links in the "added" version.
 
-		Set<String> links_removed = new TreeSet<String>();
+		Set<String> links_removed = new TreeSet<>();
 		StringBuilder rem_text = new StringBuilder();
 		Iterator<String> iter_rem = blocks_removed.iterator();
 		while (iter_rem.hasNext())
@@ -138,7 +138,7 @@ public class feature_hyperlinks {
 
 		String url, regex, desc;
 		Set<pair<String, String>> urls_and_desc =
-				new HashSet<pair<String, String>>();
+				new HashSet<>();
 		Iterator<String> url_iter = urls.iterator();
 		while (url_iter.hasNext()) {
 			url = url_iter.next();
@@ -174,16 +174,16 @@ public class feature_hyperlinks {
 				new ArrayList<String>(links_added), md.pid);
 		PARSE_SUCCESS += parse_api_agree.size();
 		links_added.removeAll(parse_api_agree);
-		Iterator<String> fail_iter = links_added.iterator();
-		while (fail_iter.hasNext())
-			System.out.println("PID: " + md.pid + " - RID: " +
-					md.rid + " - We parsed: " + fail_iter.next());
+		links_added.forEach(linkAdded -> {
+			System.out.println("PID: " + md.pid + " - RID: " + md.rid + " - We parsed: " + linkAdded);
+		});
+
 	}
 
 	/**
 	 * Publish link addittions to the DB and IRC channels
 	 *
-	 * @param links    Links found in edit wrapped by 'md'
+	 * @param urls_and_desc    Links found in edit wrapped by 'md'
 	 * @param md       Metadata of edit currently under inspection
 	 * @param db_links DB-handler over the [hyperlinks] table
 	 */

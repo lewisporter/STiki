@@ -244,7 +244,7 @@ public class xlink_parser {
 	                                          Pattern pattern) {
 
 		String url;
-		List<String> urls = new ArrayList<String>();
+		List<String> urls = new ArrayList<>();
 		List<String> matches = all_matches_within(pattern, wikitext, 1);
 		Iterator<String> match_iter = matches.iterator();
 		while (match_iter.hasNext()) {
@@ -306,7 +306,7 @@ public class xlink_parser {
 	 */
 	private static List<String> all_matches_within(
 			Pattern regex, String corpus, int capture_group) {
-		List<String> matches = new ArrayList<String>();
+		List<String> matches = new ArrayList<>();
 		Matcher match = regex.matcher(corpus);
 		while (match.find())
 			matches.add(match.group(capture_group));
