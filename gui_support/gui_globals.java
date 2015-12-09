@@ -13,10 +13,7 @@ import java.awt.event.ActionListener;
 import java.awt.font.TextAttribute;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Andrew G. West - gui_globals.java - This class implements the static
@@ -174,7 +171,7 @@ public class gui_globals {
 	 * Create a JEditorPane designed for the display of an HTML page, and
 	 * set its style such that is consistent with other STiki GUI elements
 	 *
-	 * @param URL      URL to intialize the pane with. No content will be
+	 * @param url      URL to intialize the pane with. No content will be
 	 *                 displayed if the NULL value is passed.
 	 * @param copyable If TRUE then one will be able to highlight and
 	 *                 copy-(paste) text out of this pane. Else, such functionality
@@ -492,7 +489,7 @@ public class gui_globals {
 		if (!small)
 			font = gui_globals.PLAIN_NORMAL_FONT;
 		else font = gui_globals.SMALL_NORMAL_FONT;
-		Map<TextAttribute, Object> map = new Hashtable<TextAttribute, Object>();
+		Map<TextAttribute, Object> map = new HashMap<>();
 		map.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
 
 		if (red_color)
@@ -550,7 +547,7 @@ public class gui_globals {
 	 * "pass overuse warning".
 	 */
 	public static Set<Integer> set_pass_warn_points() {
-		Set<Integer> warn_points = new TreeSet<Integer>();
+		Set<Integer> warn_points = new TreeSet<>();
 		warn_points.add(10); // Somewhat arbitrary but less frequent notifies
 		warn_points.add(50);
 		warn_points.add(100);

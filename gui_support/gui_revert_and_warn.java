@@ -274,7 +274,7 @@ public class gui_revert_and_warn implements Runnable {
 
 			if (revert_outcome.equals(EDIT_OUTCOME.SUCCESS)
 					&& this.usr_talk_msg != null
-					&& !this.usr_talk_msg.equals("")) {
+					&& !this.usr_talk_msg.isEmpty()) {
 				user_talk_append(
 						this.usr_talk_msg,
 						agf_comment(this.queue_type));
@@ -375,7 +375,7 @@ public class gui_revert_and_warn implements Runnable {
 
 			String warning = warning_template(queue_type,
 					warning_level, metadata.title, metadata.user_is_ip);
-			if (sec_content.equals("")) {
+			if (sec_content.isEmpty()) {
 				warning = "\n== " + date_header + " ==\n" + warning;
 			} else { // If header doesn't exist, need to make one
 				warning = "\n\n" + warning + "\n\n";

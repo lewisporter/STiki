@@ -417,7 +417,7 @@ public class api_post {
 		URLConnection conn = url.openConnection();
 
 		// If provided, insert the cookie data into headers
-		if ((cookie != null) && (!cookie.equals("")))
+		if ((cookie != null) && (!cookie.isEmpty()))
 			conn.setRequestProperty("Cookie", cookie);
 
 		// Then make the POST request

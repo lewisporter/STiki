@@ -57,6 +57,7 @@ public class gui_ping_server implements Runnable {
 				try {
 					parent.reset_connection(false);
 				} catch (Exception e2) {
+					System.err.println("Caught Exception: " + e.getMessage());
 				}
 			} // Ping the connection, if it fails, try to reset the connection.
 			// If unable to reset (?) -- bigger problems are forthcoming

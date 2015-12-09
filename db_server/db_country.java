@@ -118,7 +118,7 @@ public class db_country {
 	public synchronized double cur_country_rep(String country_code)
 			throws Exception {
 
-		if (country_code.equals(""))
+		if (country_code.isEmpty())
 			return (-1.0); // If no country code provided
 
 		long start_day = (stiki_utils.cur_unix_day() - COUNTRY_REP_WINDOW);

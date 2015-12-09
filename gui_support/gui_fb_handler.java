@@ -20,10 +20,10 @@ import java.util.concurrent.ExecutorService;
  * which: (1) If vandalism, reverts the edit on Wikipedia. (2) Writes the
  * feedback to the [feedback] table (which in turn closes the feedback loop,
  * via a trigger). (3) deletes the RID on the server-side.
- * <p/>
+ * <p>
  * CRITICALLY, this class executes all these operations in their own thread
  * (thus the large number of private variables).
- * <p/>
+ * </p>
  * Note that all DB-actions are wrapped in try-catch blocks such that the
  * parent class can be notified, and in the connection reset. Then, the
  * class will fetch its freshly-connected counterpart, and re-attempt. The
@@ -157,6 +157,7 @@ public class gui_fb_handler implements Runnable {
 					this.fb.equals(FB_TYPE.GUILTY_4IM))
 				this.submit_vandalism();
 		} catch (Exception e) {
+			System.err.println("Caught Exception: " + e.getMessage());
 		}
 	}
 

@@ -382,7 +382,7 @@ public class stiki_utils {
 				return false;
 		} catch (Exception e) {
 		}
-		return !(val.equalsIgnoreCase("false") || val.equals(""));
+		return !(val.equalsIgnoreCase("false") || val.isEmpty());
 	}
 
 	/**

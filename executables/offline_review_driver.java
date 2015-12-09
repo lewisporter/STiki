@@ -119,7 +119,6 @@ public class offline_review_driver extends JFrame implements
 		JFileChooser fc = new JFileChooser();
 		if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
 			enqueue_rid_file(fc.getSelectedFile().getAbsolutePath());
-		else return;
 	}
 
 	/**
@@ -172,12 +171,12 @@ public class offline_review_driver extends JFrame implements
 	 * Provided that the GUI has been intialized (via [visual_setup()]),
 	 * provide the GUI a queue of edits to display, in the form of a text file.
 	 *
-	 * @param File path to a text file which defines the edit
+	 * @param rid_file path to a text file which defines the edit
 	 *             queue. One RID per line, and nothing else.
 	 */
 	public void enqueue_rid_file(String rid_file) throws Exception {
 
-		BufferedReader rid_reader = null;
+		BufferedReader rid_reader;
 		try { // First, open RID-file, and mirrored CLASS (*.marked) file.
 			rid_reader = stiki_utils.create_reader(rid_file);
 			out_file = stiki_utils.create_writer(
@@ -382,7 +381,7 @@ public class offline_review_driver extends JFrame implements
 	 * @return An event-handler (to be added as listener) for the exit process.
 	 */
 	private WindowAdapter get_exit_handler() {
-		WindowAdapter win_close = new WindowAdapter() {
+		return (new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent w) {
 				try {
@@ -397,8 +396,7 @@ public class offline_review_driver extends JFrame implements
 					System.exit(0);
 				} // Try-catch required for interface compliance
 			}  // Smoothly shut-down all threads
-		}; // An anonymous class implements the only WindowEvent we care about
-		return (win_close);
+		}); // An anonymous class implements the only WindowEvent we care about);
 	}
 
 }

@@ -8,7 +8,6 @@ import javax.swing.*;
 import javax.swing.event.MouseInputListener;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -182,9 +181,7 @@ public class gui_agf_dialogue extends JDialog implements
 		message_map = init_message_map();
 		combo_opts = new JComboBox();
 		combo_opts.setFont(gui_globals.PLAIN_NORMAL_FONT);
-		Iterator<String> keyset = message_map.keySet().iterator();
-		while (keyset.hasNext())
-			combo_opts.addItem(keyset.next());
+		message_map.keySet().forEach(key -> combo_opts.addItem(key));
 		combo_opts.setMaximumRowCount(Integer.MAX_VALUE); // Show all options
 		combo_opts.setSelectedItem("None");
 
@@ -257,7 +254,7 @@ public class gui_agf_dialogue extends JDialog implements
 			return ("");
 		else if (talk_output.equals(INTRO_MSG))
 			return ("");
-		else if (talk_output.trim().equals(""))
+		else if (talk_output.trim().isEmpty())
 			return ("");
 		else if (talk_output.equals(ABANDON_MSG))
 			return (ABANDON_MSG);
@@ -381,7 +378,7 @@ public class gui_agf_dialogue extends JDialog implements
 	 * Write the labels and summaries which constitute the message map.
 	 */
 	private Map<String, String> init_message_map() {
-		TreeMap<String, String> map = new TreeMap<String, String>();
+		TreeMap<String, String> map = new TreeMap<>();
 
 		map.put("None",
 				"");

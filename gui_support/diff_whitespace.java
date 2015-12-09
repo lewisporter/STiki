@@ -39,7 +39,7 @@ public class diff_whitespace {
 
 		// The input will be re-constructed (with spaces), in a character-
 		// by-character fashion into the following array
-		List<Character> char_list = new ArrayList<Character>();
+		List<Character> char_list = new ArrayList<>();
 
 		boolean in_bracket = false;    // Are we currently inside an HTML tag?
 		int chars_wo_space = 0;        // How many characters without a space?
@@ -130,9 +130,9 @@ public class diff_whitespace {
 	public static int max_chars_wo_space(String str) {
 		int max_chars = 0;
 		String[] tokens = str.split("(\\s|" + gui_globals.ZWS + ")");
-		for (int i = 0; i < tokens.length; i++)
-			max_chars = Math.max(max_chars, tokens[i].length());
+		for (String token : tokens) {
+			max_chars = Math.max(max_chars, token.length());
+		}
 		return (max_chars);
 	}
-
 }

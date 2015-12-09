@@ -150,16 +150,15 @@ public class gui_colorpicker extends JDialog implements ActionListener {
 	private void removeTransparencySlider() throws Exception {
 
 		AbstractColorChooserPanel[] colorPanels = tcc.getChooserPanels();
-		for (int i = 0; i < colorPanels.length; i++) {
+		for (AbstractColorChooserPanel itrColorPanel : colorPanels) {
 
 			// Just doing reflection down through the objects until
 			// we reach appropriate depth to set invisible.
 
-			AbstractColorChooserPanel cp = colorPanels[i];
-			Field f = cp.getClass().getDeclaredField("panel");
+			Field f = itrColorPanel.getClass().getDeclaredField("panel");
 			f.setAccessible(true);
 
-			Object colorPanel = f.get(cp);
+			Object colorPanel = f.get(itrColorPanel);
 			Field f2 = colorPanel.getClass().getDeclaredField("spinners");
 			f2.setAccessible(true);
 			Object spinners = f2.get(colorPanel);

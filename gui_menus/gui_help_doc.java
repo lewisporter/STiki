@@ -3,6 +3,7 @@ package gui_menus;
 import gui_support.gui_filesys_images;
 import gui_support.gui_globals;
 import gui_support.url_browse;
+import javafx.scene.control.Hyperlink;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -57,11 +58,10 @@ public class gui_help_doc {
 	/**
 	 * Display the a section (or all) of the help document in a pop-up frame. .
 	 *
-	 * @param parent  Component from which the pop-up should be launched
 	 * @param section Section (or all) of the help-doc to display, One of the
 	 *                ANCHOR_* constants associated with this class should be passed.
 	 */
-	public static void show_help(Component parent, String section)
+	public static void show_help(String section)
 			throws Exception {
 
 		// Create the frame, its sizing, and basic properties
@@ -89,9 +89,7 @@ public class gui_help_doc {
 
 		// Add a hyperlink-listener to the HTML, modifying the default
 		// slightly so that anchor links are properly handled
-		content.addHyperlinkListener(new HyperlinkListener() {
-			@Override
-			public void hyperlinkUpdate(HyperlinkEvent e) {
+		content.addHyperlinkListener( (HyperlinkEvent e) -> {
 				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 					JEditorPane src = (JEditorPane) e.getSource();
 					if (e.getDescription().startsWith("#")) {
@@ -100,8 +98,7 @@ public class gui_help_doc {
 						url_browse.openURL(e.getURL().toString());
 					}
 				}
-			}
-		});
+			});
 
 		// Make visible; already scrolled at creation
 		frame.setVisible(true);

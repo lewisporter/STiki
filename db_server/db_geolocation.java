@@ -54,7 +54,7 @@ public class db_geolocation {
 		pstmt_gmt_offset.setLong(1, int_ip);
 		ResultSet rs = pstmt_gmt_offset.executeQuery();
 		if (rs.next()) {
-			if (rs.getString(1).equals(""))
+			if (rs.getString(1).isEmpty())
 				return (Double.NaN);
 			else return (Double.parseDouble(rs.getString(1)));
 		} // We assume there is exactly one result

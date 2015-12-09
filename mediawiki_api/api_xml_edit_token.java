@@ -4,6 +4,7 @@ import core_objects.pair;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+import java.util.regex.Pattern;
 
 /**
  * Andrew G. West - api_xml_edit_token.java - The SAX-XML parse handler
@@ -37,8 +38,8 @@ public class api_xml_edit_token extends DefaultHandler {
 
 			// Tranform time: 2010-02-18T04:48:31Z --> 20100218044831
 			// Just remove all non-digit characters
-			time = time.replaceAll("\\D*", "");
-			token_result = new pair<String, String>(token, time);
+			time = Pattern.compile("\\D*").toString();
+			token_result = new pair<>(token, time);
 		}
 	}
 

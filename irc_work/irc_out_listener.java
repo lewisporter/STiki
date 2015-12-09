@@ -56,6 +56,7 @@ public class irc_out_listener extends IRCEventAdapter {
 				Thread.sleep(SPIN_INTERVAL_MS);
 			reset_flags();
 		} catch (Exception e) {
+			System.err.println("Caught Exception: " + e.getMessage());
 		} // Only if interrupted
 	}
 
@@ -68,6 +69,7 @@ public class irc_out_listener extends IRCEventAdapter {
 				Thread.sleep(SPIN_INTERVAL_MS);
 			reset_flags();
 		} catch (Exception e) {
+			System.err.println("Caught Exception: " + e.getMessage());
 		} // Only if interrupted
 	}
 

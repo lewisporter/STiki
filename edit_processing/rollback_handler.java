@@ -135,7 +135,7 @@ public class rollback_handler {
 
 		// Next parse out the offender (and check for self-RB)
 		String uc_offender = parse_offender(uc_comment);
-		if (uc_offender.equals("") || uc_offender.equals(cur_rev_md.user))
+		if (uc_offender.isEmpty() || uc_offender.equals(cur_rev_md.user))
 			return (new pair<Long, RB_TYPE>(-1L, RB_TYPE.NONE));
 
 		// Having offender, search for offending edit RID

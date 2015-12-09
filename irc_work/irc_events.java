@@ -18,12 +18,7 @@ public class irc_events implements IRCEventListener {
 
 	// **************************** PRIVATE FIELDS ***************************
 
-	/**
-	 * IRC messages which have a (space-delimited) component matching the
-	 * regex below are deemed to be of interest, and RID is parsed from URL.
-	 */
-	private static String DIFF_URL_REGEX =
-			"https://en.wikipedia.org/w/index\\.php\\?diff=(\\d)+&oldid=(\\d)+";
+
 
 	/**
 	 * Structure to which RIDs in need of processing should be written (this
@@ -63,17 +58,21 @@ public class irc_events implements IRCEventListener {
 		// standardized format though, we simply look for the diff-url, parse
 		// out the new revision-id (R_ID) and pass it off.
 
+		/**
+		 * IRC messages which have a (space-delimited) component matching the
+		 * regex below are deemed to be of interest, and RID is parsed from URL.
+		 */
+		String DIFF_URL_REGEX = "https://en.wikipedia.org/w/index\\.php\\?diff=(\\d)+&oldid=(\\d)+";
+
 		long new_rid;
 		String[] tokens = msg.split(" ");
-		for (int i = 0; i < tokens.length; i++) {
-			if (tokens[i].matches(DIFF_URL_REGEX)) {
-
-				new_rid = rid_from_diff_url(tokens[i]);
-				if (new_rid == -1)
+		for(String itrToken : tokens) {
+			if (itrToken.matches(DIFF_URL_REGEX)) {
+				new_rid = rid_from_diff_url(itrToken);
+				if (new_rid == -1) {
 					continue; // If parse error, don't attempt API
-
+				}
 				rid_queue.offer(new rid_queue_elem(new_rid));
-
 			} // If a new edit is countered, parse and add to queue
 		} // Iterate over all message tokens, looking for diff-URL
 
@@ -187,8 +186,7 @@ public class irc_events implements IRCEventListener {
 
 		try {
 			String[] url_parts = diff_url.split("(diff=)|(&oldid)");
-			long rid = Long.parseLong(url_parts[1]);
-			return (rid);
+			return (Long.parseLong(url_parts[1]));
 		} catch (Exception e) {
 			System.out.println("Failure to parse RID for diff-URL");
 			System.out.println("String given: " + diff_url);

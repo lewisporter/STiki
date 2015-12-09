@@ -31,7 +31,6 @@ public class gui_soft_rollback {
 	 * @param edit_pkg       Wrapper for the edit/edit-chain being reverted
 	 * @param revert_comment Edit summary to associate with any reversion(s)
 	 * @param minor          Whether or not the edit should be marked as minor
-	 * @param edit_token     Edit token held on the article which 'meta' wraps
 	 * @param session_cookie Cookie identifying editing user
 	 * @param watchlist_opt  How edits should be watchlisted
 	 * @param assert_user    Whether edit should fail if user not logged in

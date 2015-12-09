@@ -771,7 +771,7 @@ public class api_retrieve {
 
 		// Get connection, insert cookie header data (if applicable)
 		URLConnection conn = url.openConnection();
-		if ((cookie != null) && (!cookie.equals("")))
+		if ((cookie != null) && (!cookie.isEmpty()))
 			conn.setRequestProperty("Cookie", cookie);
 
 		// Open up InputStream to URL, method handles retries
@@ -1242,10 +1242,9 @@ public class api_retrieve {
 	private static String url_pages_missing(Set<String> page_list)
 			throws Exception {
 		StringBuilder url = new StringBuilder();
-		url.append(base_url() + "&titles=");
-		Iterator<String> page_iter = page_list.iterator();
-		while (page_iter.hasNext())
-			url.append(URLEncoder.encode(page_iter.next(), "UTF-8") + "|");
+		url.append(base_url()).append("&titles=");
+		for (String page : page_list)
+			url.append(URLEncoder.encode(page, "UTF-8")).append("|");
 		return (url.substring(0, url.length() - 1) + "&format=xml");
 	}
 

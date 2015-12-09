@@ -202,14 +202,8 @@ public class diff_markup {
 		html = html.replace("<font color=" + COLOR_DIFF_WORDS + "><b>", "<@>");
 		html = html.replace("</b></font>", "</@>");
 
-		List<String> sorted_urls =
-				new LinkedList<String>(new TreeSet<String>(urls));
-		Collections.sort(sorted_urls, new Comparator<String>() {
-			@Override
-			public int compare(String str1, String str2) {
-				return (str2.length() - str1.length());
-			} // We make link-set a sorted list from longest to shortest URL
-		}); // This prevents greediness, (e.g. www.google.com potentially 
+		List<String> sorted_urls = new LinkedList<>(new TreeSet<>(urls));
+		Collections.sort(sorted_urls, (String str1, String str2) -> str2.length() - str1.length()); // This prevents greediness, (e.g. www.google.com potentially
 		// stealing and shortening the hyperlink for www.google.com/bla)
 
 		// We use an obscure unicode character to mark URLs that have
@@ -217,12 +211,10 @@ public class diff_markup {
 		char PROC = 0xFFFD;
 		String RX_PROC = "\\uFFFD";
 
-		String url, regex, match;
+		String regex, match;
 		Character strip_char;
-		Iterator<String> url_iter = sorted_urls.iterator(); // Is a set
-		while (url_iter.hasNext()) {
-			url = url_iter.next();
-			regex = produce_url_search_regex(url); // Find unproc instances
+		for (String sortedUrl : sorted_urls) {
+			regex = produce_url_search_regex(sortedUrl); // Find unproc instances
 			while (true) {
 				match = stiki_utils.first_match_within(regex, html);
 				if (match == null)
@@ -235,7 +227,7 @@ public class diff_markup {
 				match = match.substring(1);
 				html = html.replaceFirst("[^" + RX_PROC + "]" +
 						pattern_quote(match), strip_char +
-						"<A HREF=\"" + PROC + url + "\">" +
+						"<A HREF=\"" + PROC + sortedUrl + "\">" +
 						PROC + match + "</A>");
 			} // Keep finding instances of URL until all are marked processed
 		} // Iterate over all URLs found (although a list; also a set)
@@ -290,7 +282,6 @@ public class diff_markup {
 
 		StringBuilder sb = new StringBuilder(s.length() * 2);
 		sb.append("\\Q");
-		slashEIndex = 0;
 		int current = 0;
 		while ((slashEIndex = s.indexOf("\\E", current)) != -1) {
 			sb.append(s.substring(current, slashEIndex));

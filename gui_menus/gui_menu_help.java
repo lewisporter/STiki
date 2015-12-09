@@ -79,32 +79,31 @@ public class gui_menu_help extends JMenu implements ActionListener {
 			// scroll to a different anchor location therein.
 
 			if (event.getSource().equals(item_full))
-				gui_help_doc.show_help(this, gui_help_doc.ANCHOR_FULL);
+				gui_help_doc.show_help(gui_help_doc.ANCHOR_FULL);
 			else if (event.getSource().equals(item_queue))
-				gui_help_doc.show_help(this, gui_help_doc.ANCHOR_QUEUE);
+				gui_help_doc.show_help(gui_help_doc.ANCHOR_QUEUE);
 			else if (event.getSource().equals(item_stiki_s))
-				gui_help_doc.show_help(this, gui_help_doc.ANCHOR_STIKI_S);
+				gui_help_doc.show_help(gui_help_doc.ANCHOR_STIKI_S);
 			else if (event.getSource().equals(item_filters))
-				gui_help_doc.show_help(this, gui_help_doc.ANCHOR_FILTERS);
+				gui_help_doc.show_help(gui_help_doc.ANCHOR_FILTERS);
 			else if (event.getSource().equals(item_browser))
-				gui_help_doc.show_help(this, gui_help_doc.ANCHOR_BROWSER);
+				gui_help_doc.show_help(gui_help_doc.ANCHOR_BROWSER);
 			else if (event.getSource().equals(item_metadata))
-				gui_help_doc.show_help(this, gui_help_doc.ANCHOR_METADATA);
+				gui_help_doc.show_help(gui_help_doc.ANCHOR_METADATA);
 			else if (event.getSource().equals(item_class))
-				gui_help_doc.show_help(this, gui_help_doc.ANCHOR_CLASS);
+				gui_help_doc.show_help(gui_help_doc.ANCHOR_CLASS);
 			else if (event.getSource().equals(item_login))
-				gui_help_doc.show_help(this, gui_help_doc.ANCHOR_LOGIN);
+				gui_help_doc.show_help(gui_help_doc.ANCHOR_LOGIN);
 			else if (event.getSource().equals(item_comment))
-				gui_help_doc.show_help(this, gui_help_doc.ANCHOR_COMMENT);
+				gui_help_doc.show_help(gui_help_doc.ANCHOR_COMMENT);
 			else if (event.getSource().equals(item_lastrv))
-				gui_help_doc.show_help(this, gui_help_doc.ANCHOR_LASTRV);
+				gui_help_doc.show_help(gui_help_doc.ANCHOR_LASTRV);
 			else if (event.getSource().equals(item_pform))
-				gui_help_doc.show_help(this, gui_help_doc.ANCHOR_PFORM);
+				gui_help_doc.show_help(gui_help_doc.ANCHOR_PFORM);
 			else if (event.getSource().equals(item_ort))
-				gui_help_doc.show_help(this, gui_help_doc.ANCHOR_ORT);
+				gui_help_doc.show_help(gui_help_doc.ANCHOR_ORT);
 
 		} catch (Exception e) {
-
 			JOptionPane.showMessageDialog(this,
 					"Help file cannot be opened\n" +
 							"Please consult on-line documentation",
@@ -159,5 +158,4 @@ public class gui_menu_help extends JMenu implements ActionListener {
 		item_pform.addActionListener(this);
 		item_ort.addActionListener(this);
 	}
-
 }

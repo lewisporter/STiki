@@ -60,8 +60,7 @@ public class gui_filesys_images {
 	 */
 	private static Image get_img(String rel_path) {
 		URL url = gui_filesys_images.class.getResource(rel_path);
-		Image image = Toolkit.getDefaultToolkit().getImage(url);
-		return (image);
+		return (Toolkit.getDefaultToolkit().getImage(url));
 	}
 
 }

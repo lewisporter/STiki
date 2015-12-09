@@ -69,8 +69,6 @@ public class db_oe_migrate implements Runnable {
 
 	/**
 	 * Prepare all SQL statements required by this class.
-	 *
-	 * @param con Connection to the PreSTA-STiki database (privileged)
 	 */
 	private static void prep_statements(stiki_con_server server_con)
 			throws Exception {
