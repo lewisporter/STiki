@@ -298,8 +298,8 @@ public class feature_language {
 			String raw_diff_text) {
 
 		// The return sets
-		List<String> added_tokens = new ArrayList<String>();
-		List<String> added_blocks = new ArrayList<String>();
+		List<String> added_tokens = new ArrayList<>();
+		List<String> added_blocks = new ArrayList<>();
 
 		// Get some working-text, remove stupid tags
 		String working_text = raw_diff_text;
@@ -358,8 +358,8 @@ public class feature_language {
 			String raw_diff_text) {
 
 		// The return sets
-		List<String> removed_tokens = new ArrayList<String>();
-		List<String> removed_blocks = new ArrayList<String>();
+		List<String> removed_tokens = new ArrayList<>();
+		List<String> removed_blocks = new ArrayList<>();
 
 		// Get some working-text, remove stupid tags
 		String working_text = raw_diff_text;
