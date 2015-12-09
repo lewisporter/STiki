@@ -180,36 +180,5 @@ public class feature_builder {
 		} // Iterate over all temporally relevant OE's, adding to rep
 		return (raw_rep);
 	}
-	
-	/*
-	 * Calculate the raw-reputation of a category at timestamp 'now'
-	 * @param pid Article of the edit whose category-rep is being scored
-	 * @param db_cat DB handler for category membership data
-	 * @param db_rb DB handler for looking up past poor behavior
-	 * @return The reputation of the category of which 'pid' is a member,
-	 * that has the worst normalized (by number of members) reputation.
-	 *
-	private synchronized static double category_reputation(long pid, 
-			db_category db_cat, db_off_edits db_oe) throws Exception{
-		
-		List<Long> cat_members;		// List containing a categories members
-		Iterator<Long> iter_mems;	// Iterator over 'cat_members' instance
-		double cat_rep;				// Reputation for single category
-		double max_rep = 0.0;		// Max-normal rep. of all categories
-		
-		List<Long> cats = db_cat.get_page_memberships(pid);
-		Iterator<Long> iter_cat = cats.iterator();
-		while(iter_cat.hasNext()){
-	
-			cat_rep = 0.0;
-			cat_members = db_cat.get_category_members(iter_cat.next());
-			iter_mems = cat_members.iterator();
-			while(iter_mems.hasNext()) // Sum cat-reps from article-reps
-				cat_rep += article_reputation(iter_mems.next(), db_oe);
-			max_rep = Math.max(max_rep, (cat_rep / cat_members.size()));
-			
-		} // Outer-loop, iterate over all cat's in which page is member
-		return(max_rep);
-	} */
 
 }

@@ -110,22 +110,19 @@ public class edit_queue {
 	public edit_queue(stiki_frontend_driver parent, ExecutorService threads,
 	                  client_interface client_interface, SCORE_SYS default_queue)
 			throws Exception {
+				// First the structures are init'ed. Note where concurrent
+				// security is ensured over [inactive_rids] struct.
+				this.back_helper = new pair<Boolean, gui_display_pkg>(false, null);
+				this.edits_shown = new TreeSet<Long>();
+				this.rid_queue_cache = new LinkedBlockingQueue<gui_display_pkg>();
+				this.inactive_rids = Collections.synchronizedSortedSet(new TreeSet<Long>());
 
-		// First the structures are init'ed. Note where concurrent
-		// security is ensured over [inactive_rids] struct.
-		this.back_helper = new pair<>(false, null);
-		this.edits_shown = new TreeSet<>();
-		this.rid_queue_cache = new LinkedBlockingQueue<>();
-		this.inactive_rids = Collections.synchronizedSortedSet(new TreeSet<>());
-
-		// Then their population/maintenance classes and threads
-		this.queue_in_use = default_queue;
-		this.queue_filler = new edit_queue_filler(
-				parent, rid_queue_cache, default_queue, threads);
-		this.queue_maintainer = new edit_queue_maintain(
-				rid_queue_cache, inactive_rids, client_interface);
-		threads.submit(queue_filler); // Start population
-		threads.submit(queue_maintainer); // Start maintenance
+				// Then their population/maintenance classes and threads
+				this.queue_in_use = default_queue;
+				this.queue_filler = new edit_queue_filler(parent, rid_queue_cache, default_queue, threads);
+				this.queue_maintainer = new edit_queue_maintain(rid_queue_cache, inactive_rids, client_interface);
+				threads.submit(queue_filler); // Start population
+				threads.submit(queue_maintainer); // Start maintenance
 	}
 
 
@@ -145,12 +142,10 @@ public class edit_queue {
 	 *                        If FALSE, it indicates the failure of the immediately prior attempt.
 	 */
 	public void next_rid(String stiki_user, String session_cookie,
-	                     boolean using_native_rb, SCORE_SYS queue, boolean prev,
-	                     boolean reattempt) {
+	                     boolean using_native_rb, SCORE_SYS queue, boolean prev, boolean reattempt) {
 
-		if (!stiki_user.equals(this.stiki_user) ||
-				(using_native_rb != this.using_native_rb) ||
-				queue != this.queue_in_use) {
+		//.equals() not used because stiki_user is sometimes null
+		if (stiki_user != this.stiki_user || using_native_rb != this.using_native_rb || queue != this.queue_in_use) {
 			this.stiki_user = stiki_user;
 			this.using_native_rb = using_native_rb;
 			this.queue_in_use = queue;
@@ -184,7 +179,7 @@ public class edit_queue {
 				if (edits_shown.contains(cur_edit.metadata.rid) ||
 						!queue_maintainer.active(cur_edit.metadata.rid, true)) {
 					next_rid(stiki_user, session_cookie,
-							using_native_rb, queue, false, true);
+							using_native_rb, queue, prev, true);
 				} else edits_shown.add(cur_edit.metadata.rid);
 
 			} // If back button not involved, advance normally queue

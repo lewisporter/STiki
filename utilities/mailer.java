@@ -125,7 +125,7 @@ public class mailer {
 		pstmt.setInt(2, 100);
 
 		String username;
-		List<String> pages = new ArrayList<String>();
+		List<String> pages = new ArrayList<>();
 		ResultSet rs = pstmt.executeQuery();
 		while (rs.next()) {
 			username = rs.getString(1);

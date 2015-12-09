@@ -123,7 +123,7 @@ public class ort_edit_queue_filler implements Runnable {
 	private synchronized static List<Future<?>> remove_done(
 			List<Future<?>> futures_in) {
 
-		List<Future<?>> futures_live = new LinkedList<Future<?>>();
+		List<Future<?>> futures_live = new LinkedList<>();
 		for (int i = 0; i < futures_in.size(); i++) {
 			if (!futures_in.get(i).isDone())
 				futures_live.add(futures_in.get(i));
